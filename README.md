@@ -16,9 +16,11 @@ $ Test hello world
 ```
 ## Решение проблем
 ##### Ошибка: "Tutorial: error while loading shared libraries: libMathFunctions.so: cannot open shared object file: No such file or directory"
-Решение
+
+**Решение**
 - создайте файл .conf в директории /etc/ld.so.conf.d/ и запишите в него путь "/usr/local/lib"
 - обновите конфигурацию
+
 **Пример:**
 ```bash
 $ sudo echo "/usr/local/lib" >> /etc/ld.so.conf.d/<file_name>.conf
