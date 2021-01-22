@@ -1,6 +1,7 @@
 # IT_Academy
 ## Введение
 Данный прект был создан специально для в рамках курса ["Профессиональная разработка игр на C++"](https://www.it-academy.by/course/c-game-developer/game-developer/ "Course") от [IT Academy](https://www.it-academy.by/ "IT Academy").
+
 Со временем, сюда будут добавлятся новые работы, связанные с обучением.
 
 ## Установка
