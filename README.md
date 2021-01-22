@@ -15,7 +15,7 @@ $ cmake --install .
 $ Test hello world
 ```
 ## Решение проблем
-##### Ошибка: "Tutorial: error while loading shared libraries: libMathFunctions.so: cannot open shared object file: No such file or directory"
+#### Ошибка: "Tutorial: error while loading shared libraries: libMathFunctions.so: cannot open shared object file: No such file or directory"
 
 **Решение**
 - создайте файл .conf в директории /etc/ld.so.conf.d/ и запишите в него путь "/usr/local/lib"
