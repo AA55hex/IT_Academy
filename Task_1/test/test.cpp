@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
     }
     else
     {
-        for(int i{1}; i < argc; i++)
+        for(int i{1}; i < argc; i++ && cout)
             send(cout, argv[i]);
     }
     return !cout.good();

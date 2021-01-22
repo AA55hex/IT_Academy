@@ -3,7 +3,7 @@ project(Task_1)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_BUILD_TYPE DEBUG)
+set(CMAKE_BUILD_TYPE Release)
 option(BUILD_SHARED_LIBS "Using shared libs" ON)
 
 add_subdirectory(lib)
