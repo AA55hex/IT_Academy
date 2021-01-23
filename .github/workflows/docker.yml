@@ -48,5 +48,5 @@ jobs:
       - name: Installation Testing
         run: |
           cd Task_1/build
-          cmake --install .
+          sudo cmake --install .
           Test hello world
