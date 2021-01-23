@@ -1,4 +1,4 @@
-FROM debian:latest
+FROM ubuntu:latest
 
 LABEL maintainer="Roman Gupalo <roma.gupalo2015@yandex.ru>"
 
