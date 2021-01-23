@@ -2,6 +2,6 @@ FROM debian:latest
 
 LABEL maintainer="Roman Gupalo <roma.gupalo2015@yandex.ru>"
 
-RUN apt update
-RUN apt upgrade
-RUN apt install cmake gcc ninja-build
+RUN sudo apt update
+RUN sudo apt upgrade
+RUN sudo apt install cmake gcc ninja-build
