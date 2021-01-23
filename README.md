@@ -10,7 +10,9 @@
 ```bash
 $ git clone git@github.com:AA55hex/IT_Academy.git
 $ sudo apt install cmake gcc ninja-build
-$ cd IT_Academy/Task_1 & mkdir build & cd build
+$ cd IT_Academy/Task_1 
+$ mkdir build
+$ cd build
 $ cmake -G Ninja -DCMAKE_BUILD_TYPE=RELEASE ..
 $ cmake --build .
 $ cmake --install .
