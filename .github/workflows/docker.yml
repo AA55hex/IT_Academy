@@ -44,6 +44,7 @@ jobs:
           cd Task_1/build
           cmake -G Ninja -DCMAKE_BUILD_TYPE=DEBUG ..
           cmake --ctest .
+          sudo cmake --install .
           
       - name: Installation Testing
         run: |
