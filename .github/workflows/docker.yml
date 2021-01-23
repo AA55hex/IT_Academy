@@ -35,6 +35,8 @@ jobs:
           sudo apt-get install cmake 
           sudo apt-get install gcc
           sudo apt-get install cmake ninja-build
+          sudo echo "/usr/local/lib" >> /etc/ld.so.conf.d/<file_name>.conf
+          sudo ldconfig
           cd Task_1 
           mkdir build 
 
