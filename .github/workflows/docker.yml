@@ -39,12 +39,16 @@ jobs:
           mkdir build 
 
       # Runs a set of commands using the runners shell
-      - name: Build & CTest
+      - name: Build
         run: |
           cd Task_1/build
           cmake -G Ninja -DCMAKE_BUILD_TYPE=DEBUG ..
+          cmake --build .
+      
+      - name: CTest
+        run: |
+          cd Task_1/build
           cmake --ctest .
-          sudo cmake --install .
           
       - name: Installation Testing
         run: |
