@@ -24,7 +24,7 @@ $ Test hello world
 
 **Пример:**
 ```bash
-$ sudo echo "/usr/local/lib" >> /etc/ld.so.conf.d/<file_name>.conf
+$ sudo bash -c  "echo /usr/local/lib >> /etc/ld.so.conf.d/local.conf"
 $ sudo ldconfig
 ```
 ---
