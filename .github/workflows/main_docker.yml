@@ -33,14 +33,14 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
       
       - name: Set up Docker Buildx
-        id: buildx
         uses: docker/setup-buildx-action@v1
+        id: buildx
         
       - name: Build and push
-        id: docker_build
         uses: docker/build-push-action@v2
+        id: docker_build
         with:
-          context: ./
+          context: ./Docker/
           file: ./Dockerfile
           push: true
           tags: aa55hex/simplewhale:latest
