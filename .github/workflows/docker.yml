@@ -35,8 +35,6 @@ jobs:
           sudo apt-get install cmake 
           sudo apt-get install gcc
           sudo apt-get install cmake ninja-build
-          sudo bash -c  "echo /usr/local/lib >> /etc/ld.so.conf.d/local.conf"
-          sudo ldconfig
           cd Task_1 
           mkdir build 
 
@@ -44,7 +42,7 @@ jobs:
       - name: Build
         run: |
           cd Task_1/build
-          cmake -G Ninja -DCMAKE_BUILD_TYPE=DEBUG ..
+          cmake -G Ninja -DCMAKE_BUILD_TYPE=DEBUG .. -DCMAKE_INSTALL_PREFIX=/usr
           cmake --build .
       
       - name: CTest
