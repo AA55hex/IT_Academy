@@ -32,9 +32,9 @@ jobs:
           
       - name: Prelude
         run: |
-          sudo apt install cmake 
-          sudo apt install gcc
-          sudo apt install cmake ninja-build
+          sudo apt-get install cmake 
+          sudo apt-get install gcc
+          sudo apt-get install cmake ninja-build
           sudo cd IT_Academy/Task_1 
           mkdir build 
           cd build
