@@ -1,4 +1,5 @@
 # IT_Academy
+![Ubuntu Test](https://github.com/AA55hex/IT_Academy/workflows/Build-Test-Install/badge.svg?branch=master)
 ## Введение
 Данный прект был создан специально для в рамках курса ["Профессиональная разработка игр на C++"](https://www.it-academy.by/course/c-game-developer/game-developer/ "Course") от [IT Academy](https://www.it-academy.by/ "IT Academy").
 
