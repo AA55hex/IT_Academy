@@ -15,7 +15,7 @@ on:
 
 jobs:
 
-  build:
+  Test_1:
 
     runs-on: ubuntu-latest
 
@@ -26,38 +26,50 @@ jobs:
       - name: Prelude
         run: |
           sudo apt-get install cmake gcc ninja-build
-          sudo apt-get install libsdl2-dev
           mkdir build 
 
-      - name: Task 1 - Build Test
+      - name: Task 1 - Build
         run: |
           cd Task_1/build
           cmake -G Ninja -DCMAKE_BUILD_TYPE=DEBUG .. -DCMAKE_INSTALL_PREFIX=/usr
           cmake --build .
       
-      - name: Task 1 - CTest Test
+      - name: Task 1 - CTest
         run: |
           cd Task_1/build
           cmake --ctest .
           
-      - name: Task 1 - Installation Test
+      - name: Task 1 - Installation
         run: |
           cd Task_1/build
           sudo cmake --install .
           Test hello world
           
-      - name: Task 2 - Build Test
+  Test_2:
+    
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        
+      - name: Prelude
+        run: |
+          sudo apt-get install cmake gcc ninja-build
+          sudo apt-get install libsdl2-2.0-0
+          mkdir build 
+        
+      - name: Build
         run: |
           cd Task_2/build
           cmake -G Ninja -DCMAKE_BUILD_TYPE=DEBUG .. -DCMAKE_INSTALL_PREFIX=/usr
           cmake --build .
       
-      - name: Task 2 - CTest Test
+      - name: CTest
         run: |
           cd Task_2/build
           cmake --ctest .
           
-      - name: Task 2 - Installation Test
+      - name: Installation
         run: |
           cd Task_2/build
           sudo cmake --install .
