@@ -15,7 +15,7 @@ int main()
     SDL_version version_compiled{};
     SDL_VERSION(&version_compiled);
     SDL_GetVersion(&version_linked);
-    std::cout << version_compiled
-              << version_linked;
+    std::cout << "Compiled:\t" << version_compiled
+              << "Linked:\t" << version_linked;
     return !std::cout.good();
 }
