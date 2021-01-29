@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(SDL2_SHARED "Using dynamic" ON)
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/scripts)
+
 find_package(SDL2 REQUIRED
     NAMES SDL2 sdl2)
 
