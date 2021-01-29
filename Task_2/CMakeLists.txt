@@ -6,7 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(SDL2_SHARED "Using dynamic" ON)
 
-find_package(SDL2 REQUIRED)
+find_package(SDL2 REQUIRED
+    NAMES SDL2 sdl2)
 
 add_executable(sdl2-version-test bin/test.cpp)
 target_link_directories(sdl2-version-test PRIVATE ${SDL2_INCLUDE_DIRS})
