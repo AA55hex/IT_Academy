@@ -12,7 +12,7 @@ add_executable(sdl2-version-test bin/test.cpp)
 target_link_directories(sdl2-version-test PRIVATE ${SDL2_INCLUDE_DIRS})
 
 if(SDL2_SHARED)
-    target_link_libraries(sdl2-version-test PRIVATE SDL2::SDL2 SDL2::SDL2main)
+    target_link_libraries(sdl2-version-test PRIVATE SDL2::SDL2)
 else()
     target_link_libraries(sdl2-version-test PRIVATE SDL2::SDL2-static)
 endif()
