@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(SDL2_SHARED "Using dynamic" ON)
-
+set(SDL2_DIR /usr/local/lib/cmake/SDL2)
 find_package(SDL2 REQUIRED
     NAMES SDL2 sdl2)
 
