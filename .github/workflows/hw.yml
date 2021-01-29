@@ -63,7 +63,7 @@ jobs:
       - name: Build
         run: |
           cd Task_2/build
-          cmake -G Ninja -DCMAKE_BUILD_TYPE=DEBUG .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_MODULE_PATH=/usr/local/include/
+          cmake -G Ninja -DCMAKE_BUILD_TYPE=DEBUG .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_MODULE_PATH=/usr/local/lib/cmake/
           cmake --build .
       
       - name: CTest
