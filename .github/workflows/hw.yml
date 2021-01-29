@@ -57,15 +57,15 @@ jobs:
         run: |
           sudo apt-get install cmake gcc ninja-build
           sudo apt-get install libsdl2-dev libsdl2-2.0-0
+          sudo bash -c  "echo /usr/local/lib >> /etc/ld.so.conf.d/local.conf"
+          sudo ldconfig
           cd Task_2
           mkdir build 
         
       - name: Build
         run: |
           cd Task_2/build
-          cmake -G Ninja -DCMAKE_BUILD_TYPE=DEBUG .. -DCMAKE_INSTALL_PREFIX=/usr 
-          sudo bash -c  "echo /usr/local/lib >> /etc/ld.so.conf.d/local.conf"
-          sudo ldconfig
+          cmake -G Ninja -DCMAKE_BUILD_TYPE=DEBUG .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_PREFIX_PATH=usr/local
           cmake --build .
       
       - name: CTest
