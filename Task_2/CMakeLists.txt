@@ -10,7 +10,7 @@ find_package(SDL2 REQUIRED
     NAMES SDL2 sdl2)
 
 add_executable(sdl2-version-test bin/test.cpp)
-target_link_directories(sdl2-version-test PRIVATE ${SDL2_INCLUDE_DIRS})
+
 
 if(SDL2_SHARED)
     target_link_libraries(sdl2-version-test PRIVATE SDL2::SDL2)
