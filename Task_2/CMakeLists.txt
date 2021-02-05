@@ -21,4 +21,4 @@ endif()
 install(TARGETS sdl2-version-test DESTINATION bin)
 
 enable_testing()
-add_test(NAME Simple_test COMMAND Test)
+add_test(NAME Simple_test COMMAND sdl2-version-test)

@@ -58,7 +58,17 @@ jobs:
           sudo bash -c  "echo /usr/local/lib >> /etc/ld.so.conf.d/local.conf"
           sudo ldconfig
           sudo apt-get install cmake gcc ninja-build
-          sudo apt-get install libsdl2-dev libsdl2-2.0-0
+          sudo apt-get remove libsdl2-dev libsdl2-2.0-0 -y
+          
+          hg clone https://hg.libsdl.org/SDL SDL
+          cd SDL
+          mkdir build
+          cd build
+          ../configure
+          make
+          sudo make install
+          
+          cd ../..
           cd Task_2
           mkdir build 
         
