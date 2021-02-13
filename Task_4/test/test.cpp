@@ -45,12 +45,12 @@ int main()
   std::map<int, render::vertex> triangle_v{};
 
   triangle_v[0] = {0, 0, 255, 0, 0, 0, 0};
-  triangle_v[1] = {0, height, 0, 255, 0, 0, 239};
-  triangle_v[2] = {width, height, 0, 0, 255, 319, 239};
+  triangle_v[1] = {0, height - 1, 0, 255, 0, 0, 239};
+  triangle_v[2] = {width - 1, height - 1, 0, 0, 255, 319, 239};
 
   triangle_v[3] = {0, 0, 0, 255, 0, 0, 0};
-  triangle_v[4] = {width, 0, 255, 0, 0, 319, 239};
-  triangle_v[5] = {width, height, 255, 0, 0, 319, 239};
+  triangle_v[4] = {width - 1, 0, 255, 0, 0, 319, 239};
+  triangle_v[5] = {width - 1, height - 1, 255, 0, 0, 319, 239};
   std::vector<int> indexes_v{0, 1, 2, 3, 4, 5};
 
   void* pixels = cnv.data();

@@ -125,12 +125,10 @@ class itp_triangle : public triangle_render
   void set_gfx_program(gfx_program& gfx);
 
  private:
-  std::vector<vertex> rasterize(const vertex& vtx1, const vertex& vtx2,
-                                const vertex& vtx3);
+  void rasterize(const vertex& vtx1, const vertex& vtx2, const vertex& vtx3);
   void horizontal_raster(const vertex& vtx, const vertex& left,
-                         const vertex& right, std::vector<vertex>& output);
-  void raster_line(const vertex& left, const vertex& right,
-                   std::vector<vertex>& output);
+                         const vertex& right);
+  void raster_line(const vertex& left, const vertex& right);
   gfx_program* gfx;
 };
 }  // namespace render

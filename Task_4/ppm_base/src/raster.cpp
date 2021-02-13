@@ -59,37 +59,38 @@ vertex get_subcoordinate(const vertex& top, const vertex& bottom,
   return result;
 }
 
-void itp_triangle::raster_line(const vertex& left, const vertex& right,
-                               std::vector<vertex>& output)
+void itp_triangle::raster_line(const vertex& left, const vertex& right)
 {
-  size_t pixel_count{
-      static_cast<size_t>(std::abs(std::ceil(left.x - right.x)) + 1)};
+  const size_t pixel_count{
+      static_cast<size_t>(std::abs(std::round(left.x - right.x)) + 1)};
   for (size_t it{0}; it < pixel_count; it++)
     {
       double coef{static_cast<double>(it) / pixel_count};
       vertex buff{interpolate(left, right, coef)};
-      output.push_back(buff);
+
+      rgb_color color{gfx->fragment_shader(buff)};
+      const coordinate pos{static_cast<size_t>(buff.x),
+                           static_cast<size_t>(buff.y)};
+      owner[pos] = color;
     }
 }
 
 void itp_triangle::horizontal_raster(const vertex& vtx, const vertex& left,
-                                     const vertex& right,
-                                     std::vector<vertex>& output)
+                                     const vertex& right)
 {
-  size_t line_count{
-      static_cast<size_t>(std::abs(std::ceil(vtx.y - left.y)) + 1)};
+  const size_t line_count{
+      static_cast<size_t>(std::abs(std::round(vtx.y - left.y)) + 1)};
   for (size_t it{0}; it < line_count; it++)
     {
       double coef{static_cast<double>(it) / line_count};
       vertex l_buff{interpolate(vtx, left, coef)};
       vertex r_buff{interpolate(vtx, right, coef)};
-      raster_line(l_buff, r_buff, output);
+      raster_line(l_buff, r_buff);
     }
 }
 
-std::vector<vertex> itp_triangle::rasterize(const vertex& vtx1,
-                                            const vertex& vtx2,
-                                            const vertex& vtx3)
+void itp_triangle::rasterize(const vertex& vtx1, const vertex& vtx2,
+                             const vertex& vtx3)
 {
   std::vector<vertex> result{};
   std::array<vertex, 3> ordered_y{vtx1, vtx2, vtx3};
@@ -102,10 +103,8 @@ std::vector<vertex> itp_triangle::rasterize(const vertex& vtx1,
 
   const vertex horizontal{get_subcoordinate(top, bottom, middle)};
 
-  horizontal_raster(top, middle, horizontal, result);
-  horizontal_raster(bottom, middle, horizontal, result);
-
-  return result;
+  horizontal_raster(top, middle, horizontal);
+  horizontal_raster(bottom, middle, horizontal);
 }
 
 void itp_triangle::rastered_draw(std::map<int, vertex>& vertexes,
@@ -116,14 +115,7 @@ void itp_triangle::rastered_draw(std::map<int, vertex>& vertexes,
       const vertex& vtx1{gfx->vertex_shader(vertexes[it[0]])};
       const vertex& vtx2{gfx->vertex_shader(vertexes[it[1]])};
       const vertex& vtx3{gfx->vertex_shader(vertexes[it[2]])};
-      std::vector<vertex> buff{rasterize(vtx1, vtx2, vtx3)};
-      for (const vertex& it : buff)
-        {
-          rgb_color color{gfx->fragment_shader(it)};
-          const coordinate pos{static_cast<size_t>(it.x),
-                               static_cast<size_t>(it.y)};
-          owner[pos] = color;
-        }
+      rasterize(vtx1, vtx2, vtx3);
     }
 }
 
