@@ -12,29 +12,14 @@ typedef std::experimental::string_view string_view;
 
 
 
-//Add KeyboardCode inicialize
+
 struct key_bind
 {
 	key_bind(SDL_KeyCode keycode, string_view name, SDL_EventType t)
 		: key{keycode}, key_name{name}, type{t}
 	{}
-
 	key_bind(SDL_KeyCode keycode, string_view name)
-		: key_bind(keycode,
-				   name,
-				   SDL_EventType::SDL_FIRSTEVENT)
-	{}
-
-	key_bind(SDL_KeyboardEvent evt)
-		: key_bind(static_cast<SDL_KeyCode>(evt.keysym.sym),
-				   static_cast<char>(evt.keysym.sym) + "",
-				   static_cast<SDL_EventType>(evt.type))
-	{}
-
-	key_bind(SDL_KeyboardEvent evt, string_view name)
-		: key_bind(static_cast<SDL_KeyCode>(evt.keysym.sym),
-				   name,
-				   static_cast<SDL_EventType>(evt.type))
+		: key{keycode}, key_name{name}, type{SDL_FIRSTEVENT}
 	{}
 
 	SDL_KeyCode key;
@@ -84,7 +69,7 @@ int loop()
 			binds = update(binds);
 			//render
 			///out_updated_info
-			binds = binds = render(binds);
+			binds = render(binds);
 		}
 	}
 	SDL_DestroyWindow(window);
@@ -115,7 +100,7 @@ std::vector<key_bind> render(const std::vector<key_bind>& keys)
 		else
 			ups.push_back(*it);
 	}
-	//out_keys(ups, "Released - ");
+	out_keys(ups, "Released - ");
 	out_keys(downs, "Pressed - ");
 	vector<key_bind> result{};
 	for(const key_bind& buff : keys)
@@ -195,33 +180,6 @@ bool read_input(std::vector<key_bind>& input)
 	return updated;
 }
 
-//key_bind handle_event(const SDL_Event& event)
-//{
-//	using namespace std;
-//	const array<key_bind, 8> binds
-//	{
-//		{
-//			{ SDLK_w, "Up" },
-//			{ SDLK_a, "Left" },
-//			{ SDLK_s, "Down" },
-//			{ SDLK_d, "Right" },
-//			{ SDLK_LCTRL, "Ctrl" },
-//			{ SDLK_SPACE, "Space" },
-//			{ SDLK_ESCAPE, "Escape" },
-//			{ SDLK_RETURN, "Enter" }
-//		}
-//	};
-//	const auto iterator = find_if(binds.begin(), binds.end(),
-//								  [&](const key_bind& bind){return bind.key == event.key.keysym.sym;} );
-//	if(iterator != binds.end())
-//		return key_bind(iterator->key,
-//						iterator->key_name,
-//						static_cast<SDL_EventType>(event.type));
-//	else
-//		return key_bind(iterator->key,
-//						"Uncown",
-//						static_cast<SDL_EventType>(event.type));
-//}
 
 
 int get_version()
