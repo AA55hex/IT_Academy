@@ -63,19 +63,12 @@ void itp_triangle::raster_line(const vertex& left, const vertex& right,
                                std::vector<vertex>& output)
 {
   size_t pixel_count{
-      static_cast<size_t>(std::abs(std::round(left.x - right.x)) + 1)};
-  if (pixel_count > 0)
+      static_cast<size_t>(std::abs(std::ceil(left.x - right.x)) + 1)};
+  for (size_t it{0}; it < pixel_count; it++)
     {
-      for (size_t it{0}; it < pixel_count; it++)
-        {
-          double coef{static_cast<double>(it) / pixel_count};
-          vertex buff{interpolate(left, right, coef)};
-          output.push_back(buff);
-        }
-    }
-  else
-    {
-      output.push_back(left);
+      double coef{static_cast<double>(it) / pixel_count};
+      vertex buff{interpolate(left, right, coef)};
+      output.push_back(buff);
     }
 }
 
@@ -84,20 +77,13 @@ void itp_triangle::horizontal_raster(const vertex& vtx, const vertex& left,
                                      std::vector<vertex>& output)
 {
   size_t line_count{
-      static_cast<size_t>(std::abs(std::round(vtx.y - left.y)) + 1)};
-  if (line_count > 0)
+      static_cast<size_t>(std::abs(std::ceil(vtx.y - left.y)) + 1)};
+  for (size_t it{0}; it < line_count; it++)
     {
-      for (size_t it{0}; it < line_count; it++)
-        {
-          double coef{static_cast<double>(it) / line_count};
-          vertex l_buff{interpolate(vtx, left, coef)};
-          vertex r_buff{interpolate(vtx, right, coef)};
-          raster_line(l_buff, r_buff, output);
-        }
-    }
-  else
-    {
-      raster_line(left, right, output);
+      double coef{static_cast<double>(it) / line_count};
+      vertex l_buff{interpolate(vtx, left, coef)};
+      vertex r_buff{interpolate(vtx, right, coef)};
+      raster_line(l_buff, r_buff, output);
     }
 }
 
