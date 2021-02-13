@@ -5,8 +5,8 @@ namespace render
 {
 line_render::line_render(canvas& owner_) : owner{owner_} {}
 
-std::vector<coordinate> line_render::get_coordinates(coordinate pos1,
-                                                     coordinate pos2)
+std::vector<coordinate> line_render::get_line_coordinates(coordinate pos1,
+                                                          coordinate pos2)
 {
   std::vector<coordinate> result{};
   const int x_diff{static_cast<int>(pos2.x - pos1.x)};

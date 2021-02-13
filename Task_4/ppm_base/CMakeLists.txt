@@ -4,6 +4,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_library(ppm
     include/ppm_base.h
     include/render.h
+    src/canvas.cpp
     src/raster.cpp
     src/line_render.cpp
     src/triangle.cpp

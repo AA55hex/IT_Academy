@@ -25,75 +25,33 @@ struct coordinate
   }
 };
 
-// struct pixel : public coordinate
-//{
-//  rgb_color& color;
-//};
-
 class canvas
 {
  public:
   using iterator = std::vector<rgb_color>::iterator;
-  canvas(size_t width_, size_t height_)
-      : height{height_},
-        width{width_},
-        pixels{new std::vector<rgb_color>(height_ * width_)}
-  {
-  }
+  canvas(size_t width_, size_t height_);
   canvas(const canvas& right) = delete;
-  canvas(canvas&& right)
-  {
-    pixels = right.pixels;
-    right.pixels = nullptr;
-    height = right.height;
-    width = right.width;
-  }
+  canvas(canvas&& right);
 
-  rgb_color& operator[](const coordinate& pos)
-  {
-    size_t buff{pos.y * width + pos.x};
-    return (*pixels)[pos.y * width + pos.x];
-  }
-  rgb_color operator[](const coordinate& pos) const
-  {
-    return (*pixels)[pos.y * width + pos.x];
-  }
+  rgb_color& operator[](const coordinate& pos);
+  rgb_color operator[](const coordinate& pos) const;
+  size_t get_height() const;
+  size_t get_width() const;
 
-  size_t get_height() const { return height; }
-  size_t get_width() const { return width; }
+  void clear(rgb_color color);
 
-  void clear(rgb_color color)
-  {
-    std::fill(pixels->begin(), pixels->end(), color);
-  }
+  size_t size() const;
 
-  size_t size() const { return pixels->size(); }
+  iterator begin();
+  iterator end();
 
-  iterator begin() { return pixels->begin(); }
-  iterator end() { return pixels->end(); }
+  canvas& operator=(const canvas& right);
 
-  canvas& operator=(const canvas& right)
-  {
-    delete pixels;
-    *pixels = *(right.pixels);
-    height = right.height;
-    width = right.width;
-    return *this;
-  }
+  canvas& operator=(canvas&& right);
 
-  canvas& operator=(canvas&& right)
-  {
-    delete pixels;
-    pixels = right.pixels;
-    right.pixels = nullptr;
-    height = right.height;
-    width = right.width;
-    return *this;
-  }
+  rgb_color* data() const;
 
-  rgb_color* data() const { return pixels->data(); }
-
-  ~canvas() { delete pixels; }
+  ~canvas();
 
  private:
   size_t height{0};
@@ -101,24 +59,13 @@ class canvas
   std::vector<rgb_color>* pixels;
 };
 
-class irender
-{
- public:
-  virtual std::vector<coordinate> get_coordinates(coordinate pos1,
-                                                  coordinate pos2) = 0;
-  // virtual std::vector<pixel> get_pixels(coordinate pos1, coordinate pos2) =
-  // virtual bool render(coordinate pos1, coordinate pos2, rgb_color color) = 0;
-  virtual ~irender() {}
-};
-
-class line_render : public irender
+class line_render
 {
  public:
   line_render(canvas& cnv);
-  std::vector<coordinate> get_coordinates(coordinate pos1,
-                                          coordinate pos2) override;
-  // std::vector<pixel> get_pixels(coordinate pos1, coordinate pos2) override;
-  virtual ~line_render() override;
+  std::vector<coordinate> get_line_coordinates(coordinate pos1,
+                                               coordinate pos2);
+  virtual ~line_render();
 
  protected:
   canvas& owner;

@@ -25,7 +25,8 @@ std::vector<coordinate> triangle_render::get_coordinates(coordinate pos1,
   for (auto [start, end] :
        {line{pos1, pos2}, line{pos2, pos3}, line{pos3, pos1}})
     {
-      std::vector<coordinate> buff{line_render::get_coordinates(start, end)};
+      std::vector<coordinate> buff{
+          line_render::get_line_coordinates(start, end)};
       buff.pop_back();
       for (auto it : buff)
         {

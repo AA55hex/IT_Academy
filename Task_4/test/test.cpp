@@ -8,17 +8,6 @@
 #include <random>
 #include "gfx.h"
 
-std::map<int, render::coordinate> get_random_map(const int count)
-{
-  std::map<int, render::coordinate> result{};
-  for (int i{0}; i < count; i++)
-    {
-      size_t x_ord{static_cast<size_t>(rand() % 640)};
-      size_t y_ord{static_cast<size_t>(rand() % 480)};
-      result[i] = {x_ord, y_ord};
-    }
-  return result;
-}
 int main()
 {
   const int width{640};
@@ -128,30 +117,4 @@ int main()
   SDL_Quit();
 
   return EXIT_SUCCESS;
-  //  render::line_render line{cnv};
-  //  auto pixels{line.get_coordinates({639, 479}, {0, 0})};
-  //  color = {122, 255, 122};
-  //  std::for_each(pixels.begin(), pixels.end(),
-  //                [&](render::coordinate& c) { cnv[c] = color; });
-
-  //  render::itp_triangle triangle{cnv};
-  //  render::gfx1 prg{};
-  //  prg.set_uniforms(render::uniforms{150, 150, 100});
-  //  triangle.set_gfx_program(prg);
-  //  std::map<int, render::vertex> vertexes{};
-  //  vertexes[0] = {0, 0, 255, 0, 0};
-  //  vertexes[1] = {639, 480, 0, 255, 0};
-  //  vertexes[2] = {0, 480, 0, 0, 255};
-  //  vertexes[5] = {0, 0, 255, 0, 0};
-  //  vertexes[3] = {640, 0, 0, 255, 0};
-  //  vertexes[4] = {640, 480, 0, 0, 255};
-  //  std::vector<int> indexes{0, 1, 2, 3, 4, 5};
-  //  triangle.rastered_draw(vertexes, indexes);
-
-  //  if (ppm::image_manager::save_image(cnv, "green_canvas.ppm"))
-  //    std::cout << "good";
-  //  else
-  //    std::cout << "fail";
-  //  std::cout << std::endl;
-  //  return 0;
 }
