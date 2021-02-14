@@ -67,10 +67,9 @@ void itp_triangle::raster_line(const vertex& left, const vertex& right)
     {
       double coef{static_cast<double>(it) / pixel_count};
       vertex buff{interpolate(left, right, coef)};
-
       rgb_color color{gfx->fragment_shader(buff)};
-      const coordinate pos{static_cast<size_t>(buff.x),
-                           static_cast<size_t>(buff.y)};
+      const coordinate pos{static_cast<size_t>(std::round(buff.x)),
+                           static_cast<size_t>(std::round(buff.y))};
       owner[pos] = color;
     }
 }
@@ -83,8 +82,8 @@ void itp_triangle::horizontal_raster(const vertex& vtx, const vertex& left,
   for (size_t it{0}; it < line_count; it++)
     {
       double coef{static_cast<double>(it) / line_count};
-      vertex l_buff{interpolate(vtx, left, coef)};
-      vertex r_buff{interpolate(vtx, right, coef)};
+      vertex l_buff{interpolate(left, vtx, coef)};
+      vertex r_buff{interpolate(right, vtx, coef)};
       raster_line(l_buff, r_buff);
     }
 }

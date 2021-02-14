@@ -8,13 +8,19 @@ project(Task_4)
 
 find_package(SDL2 REQUIRED)
 
-add_subdirectory(ppm_base)
-
-add_executable(test_ppm
-    test/test.cpp
+add_library(gfx STATIC
     test/gfx.cpp
     test/gfx.h)
 
+target_link_libraries(gfx PRIVATE
+    ppm)
+
+add_subdirectory(ppm_base)
+
+add_executable(test_ppm
+    test/test.cpp)
+
 target_link_libraries(test_ppm PRIVATE
     ppm
+    gfx
     SDL2::SDL2)

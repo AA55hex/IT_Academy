@@ -44,14 +44,14 @@ int main()
 
   std::map<int, render::vertex> triangle_v{};
 
-  triangle_v[0] = {0, 0, 255, 0, 0, 0, 0};
-  triangle_v[1] = {0, height - 1, 0, 255, 0, 0, 239};
-  triangle_v[2] = {width - 1, height - 1, 0, 0, 255, 319, 239};
+  triangle_v[0] = {1, 1, 255, 0, 0, 0, 0};
+  triangle_v[1] = {1, height - 1, 0, 255, 0, 0, 239};
+  triangle_v[2] = {width, height, 0, 0, 255, 319, 239};
 
-  triangle_v[3] = {0, 0, 0, 255, 0, 0, 0};
-  triangle_v[4] = {width - 1, 0, 255, 0, 0, 319, 239};
-  triangle_v[5] = {width - 1, height - 1, 255, 0, 0, 319, 239};
-  std::vector<int> indexes_v{0, 1, 2, 3, 4, 5};
+  triangle_v[3] = {1, 1, 0, 255, 0, 0, 0};
+  triangle_v[4] = {width, 0, 255, 0, 0, 319, 239};
+  triangle_v[5] = {width, height, 255, 0, 0, 319, 239};
+  std::vector<int> indexes_v{3, 4, 5, 0, 1, 2};
 
   void* pixels = cnv.data();
   const int depth = sizeof(render::rgb_color) * 8;
@@ -61,12 +61,12 @@ int main()
   const int bmask = 0x00ff0000;
   const int amask = 0;
 
-  render::gfx1 prg{};
+  render::gfx1 prg{cnv};
   itp_render.set_gfx_program(prg);
 
   double mouse_x{};
   double mouse_y{};
-  double radius{50};
+  double radius{100};
 
   bool continue_loop = true;
 
@@ -95,7 +95,6 @@ int main()
       prg.set_uniforms(render::uniforms{mouse_x, mouse_y, radius});
 
       itp_render.rastered_draw(triangle_v, indexes_v);
-
       SDL_Surface* bitmapSurface = SDL_CreateRGBSurfaceFrom(
           pixels, width, height, depth, pitch, rmask, gmask, bmask, amask);
 
