@@ -17,6 +17,14 @@ canvas::canvas(canvas&& right)
   width = right.width;
 }
 
+canvas::canvas(size_t width_, size_t height_,
+               const std::vector<rgb_color>& texture)
+    : height{height_},
+      width{width_},
+      pixels{new std::vector<rgb_color>{texture}}
+{
+}
+
 rgb_color& canvas::operator[](const coordinate& pos)
 {
   return (*pixels)[pos.y * width + pos.x];

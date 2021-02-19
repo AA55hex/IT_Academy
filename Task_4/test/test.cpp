@@ -1,19 +1,21 @@
 #include <SDL.h>
+#include <SDL_atomic.h>
 #include <math.h>
 #include <ppm_base.h>
 #include <render.h>
 #include <algorithm>
 #include <iostream>
 #include <map>
-#include <random>
 #include "gfx.h"
+
+double get_step_kfc(double x) { return 1.0 / (1 + std::exp(-x / 2)); }
 
 int main()
 {
   const int width{640};
   const int height{480};
 
-  if (0 != SDL_Init(SDL_INIT_EVERYTHING))
+  if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
     {
       std::cerr << SDL_GetError() << std::endl;
       return EXIT_FAILURE;
@@ -40,18 +42,18 @@ int main()
   render::canvas cnv{width, height};
   cnv.clear(default_color);
 
-  render::itp_triangle itp_render{cnv};
+  render::rastered_triangle itp_render{cnv};
 
   std::map<int, render::vertex> triangle_v{};
 
-  triangle_v[0] = {1, 1, 255, 0, 0, 0, 0};
-  triangle_v[1] = {1, height - 1, 0, 255, 0, 0, 239};
-  triangle_v[2] = {width, height, 0, 0, 255, 319, 239};
+  triangle_v[0] = {0, 0, 255, 0, 0, 0, 0};
+  triangle_v[1] = {0, 1, 0, 255, 0, 0, 1};
+  triangle_v[2] = {1, 1, 0, 0, 255, 1, 1};
 
-  triangle_v[3] = {1, 1, 0, 255, 0, 0, 0};
-  triangle_v[4] = {width, 0, 255, 0, 0, 319, 239};
-  triangle_v[5] = {width, height, 255, 0, 0, 319, 239};
-  std::vector<int> indexes_v{3, 4, 5, 0, 1, 2};
+  triangle_v[3] = {0, 0, 0, 255, 0, 0, 0};
+  triangle_v[4] = {1, 0, 255, 0, 0, 1, 0};
+  triangle_v[5] = {1, 1, 255, 0, 0, 1, 1};
+  std::vector<int> indexes_v{0, 1, 2, 3, 4, 5};
 
   void* pixels = cnv.data();
   const int depth = sizeof(render::rgb_color) * 8;
@@ -61,17 +63,30 @@ int main()
   const int bmask = 0x00ff0000;
   const int amask = 0;
 
-  render::gfx1 prg{cnv};
+  render::canvas texture{ppm::image_manager::load_image("image.ppm")};
+  render::canvas key{ppm::image_manager::load_image("key.ppm")};
+  render::gfx1 prg{texture, key};
   itp_render.set_gfx_program(prg);
 
-  double mouse_x{};
-  double mouse_y{};
-  double radius{100};
+  bool continue_loop{true};
 
-  bool continue_loop = true;
-
+  const int steps{128};
+  size_t line_pos_x{0};
+  double line_buff{width};
+  Uint32 prev_ticks{SDL_GetTicks()};
+  Uint32 current_ticks{};
+  double max_speed{(width * 2.0) / steps};
   while (continue_loop)
     {
+      current_ticks = SDL_GetTicks();
+      if ((current_ticks - prev_ticks) >= 10 && line_buff >= 0)
+        {
+          // double speed_k{get_step_kfc((line_buff / 100) * 7 - 5)};
+          double speed_k{std::tanh(line_buff - width / 2.0)};
+          line_buff -= static_cast<double>(width) / steps;
+          line_pos_x += static_cast<size_t>(max_speed * speed_k);
+          prev_ticks = current_ticks;
+        }
       SDL_Event e;
       while (SDL_PollEvent(&e))
         {
@@ -80,19 +95,10 @@ int main()
               continue_loop = false;
               break;
             }
-          else if (e.type == SDL_MOUSEMOTION)
-            {
-              mouse_x = e.motion.x;
-              mouse_y = e.motion.y;
-            }
-          else if (e.type == SDL_MOUSEWHEEL)
-            {
-              radius += e.wheel.y;
-            }
         }
-
       cnv.clear(default_color);
-      prg.set_uniforms(render::uniforms{mouse_x, mouse_y, radius});
+      prg.set_uniforms(
+          render::uniforms{0, 0, 0, 0, 0, 0, 0, 0, width, height, line_pos_x});
 
       itp_render.rastered_draw(triangle_v, indexes_v);
       SDL_Surface* bitmapSurface = SDL_CreateRGBSurfaceFrom(

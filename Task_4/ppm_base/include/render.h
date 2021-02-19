@@ -1,5 +1,4 @@
 #pragma once
-#define __cplusplus 201703L
 #include <math.h>
 #include <array>
 #include <cassert>
@@ -30,6 +29,7 @@ class canvas
  public:
   using iterator = std::vector<rgb_color>::iterator;
   canvas(size_t width_, size_t height_);
+  canvas(size_t width_, size_t height_, const std::vector<rgb_color>& pixels);
   canvas(const canvas& right) = delete;
   canvas(canvas&& right);
 
@@ -103,6 +103,9 @@ struct uniforms
   double f5 = 0;
   double f6 = 0;
   double f7 = 0;
+  size_t s0{0};
+  size_t s1{0};
+  size_t s3{0};
 };
 
 double interpolate(const double begin, const double end, const double t);
@@ -116,10 +119,10 @@ struct gfx_program
   virtual ~gfx_program() = default;
 };
 
-class itp_triangle : public triangle_render
+class rastered_triangle : public triangle_render
 {
  public:
-  itp_triangle(canvas& cnv);
+  rastered_triangle(canvas& cnv);
   void rastered_draw(std::map<int, vertex>& vertexes,
                      const std::vector<int>& indexes);
   void set_gfx_program(gfx_program& gfx);
