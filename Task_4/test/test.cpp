@@ -81,7 +81,7 @@ int main()
       current_ticks = SDL_GetTicks();
       if ((current_ticks - prev_ticks) >= 10 && line_buff >= 0)
         {
-          // double speed_k{get_step_kfc((line_buff / 100) * 7 - 5)};
+          // double speed_k{get_step_kfc((line_buff / steps) * 7 - 5)};
           double speed_k{std::tanh(line_buff - width / 2.0)};
           line_buff -= static_cast<double>(width) / steps;
           line_pos_x += static_cast<size_t>(max_speed * speed_k);
