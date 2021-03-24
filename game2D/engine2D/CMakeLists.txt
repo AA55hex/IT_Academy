@@ -11,8 +11,8 @@ find_package(OpenGL REQUIRED)
 
 
 add_library(engine2D STATIC
-    include/system/window_manager.h
-    src/system/window_manager.cpp
+    include/core/engine.h
+    src/core/engine.cpp
 
 
     include/render/shader_program.h
@@ -35,6 +35,14 @@ add_library(engine2D STATIC
 
     include/render/sprite2D.h
     src/render/sprite2D.cpp
+
+
+    include/sound/wav_sound.h
+    src/sound/wav_sound.cpp
+
+    include/sound/sound_buffer.h
+    src/sound/sound_buffer.cpp
+
 
     include/resources/resource_manager.h
     src/resources/resource_manager.cpp

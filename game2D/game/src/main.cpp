@@ -1,5 +1,6 @@
 #include <glm/vec2.hpp>
 #include <iostream>
+#include "core/engine.h"
 #include "glm/vec2.hpp"
 #include "render/index_buffer.h"
 #include "render/renderer.h"
@@ -8,7 +9,7 @@
 #include "render/vertex_array.h"
 #include "render/vertex_buffer.h"
 #include "resources/resource_manager.h"
-#include "system/window_manager.h"
+#include "sound/sound_buffer.h"
 struct rgb_color
 {
   float r{0};
@@ -40,14 +41,15 @@ struct vertex
 
 int main()
 {
-  using namespace core;
-  window_manager win_mgr{"test", 640, 480};
+  using namespace engine;
+  engine::inicialize(640, 480, "test", true);
 
   resources::resource_manager mgr{"res/"};
   auto prg{mgr.load_shader_program("test_prg", "shaders/test_shader.vert",
                                    "shaders/test_shader.frag")};
   auto texture{mgr.load_texture2D("texture", "textures/camera_200.png")};
 
+  auto sound{mgr.load_wav("highlands", "sound/highlands.wav")};
   using namespace render;
   renderer::clear_color(0.33f, 0.66f, 0.99f, 0.0f);
 
@@ -56,14 +58,18 @@ int main()
       texture, prg, glm::vec2{size, 1}, glm::vec2{-0.5 * size, -0.5}, 1, 15};
 
   float rotation{15};
+  sound::sound_buffer main_buffer{};
+  main_buffer.use();
+  sound->play();
   while (true)
     {
       sprite.set_rotation(rotation);
       rotation++;
       sprite.render();
-      win_mgr.swap_buffers();
+      renderer::swap_buffers();
       renderer::clear();
     }
+  engine::dispose();
   return 0;
 }
 

@@ -119,4 +119,48 @@ std::shared_ptr<render::texture2D> resource_manager::get_texture2D(
   return it->second;
 }
 
+std::shared_ptr<sound::wav_sound> resource_manager::load_wav(
+    const std::string& wav_name, const std::string& filepath)
+{
+  using namespace std;
+
+  std::string full_path = path + filepath;
+
+  SDL_AudioSpec audio_spec_from_file{};
+  uint8_t* sample_buffer_from_file = nullptr;
+  uint32_t sample_buffer_len_from_file = 0;
+
+  clog << "loading sample buffer from file: " << filepath << endl;
+
+  if (SDL_LoadWAV(full_path.c_str(), &audio_spec_from_file,
+                  &sample_buffer_from_file,
+                  &sample_buffer_len_from_file) == nullptr)
+    {
+      cerr << "Resource_manager:: audio load runtime error: can't parse and "
+              "load audio samples from file\n";
+      return nullptr;
+    }
+
+  clog << "audio buffer from file size: " << sample_buffer_len_from_file
+       << " B (" << sample_buffer_len_from_file / double(1024 * 1024) << ") Mb"
+       << endl;
+
+  wav_map[wav_name] = std::make_shared<sound::wav_sound>(
+      sample_buffer_from_file, sample_buffer_len_from_file);
+
+  return wav_map[wav_name];
+}
+std::shared_ptr<sound::wav_sound> resource_manager::get_wav(
+    const std::string& wav_name)
+{
+  auto it = wav_map.find(wav_name);
+  if (it == wav_map.end())
+    {
+      std::cerr << "Resource_manager: wav_sound <" << wav_name << "> not found"
+                << std::endl;
+      return nullptr;
+    }
+  return it->second;
+}
+
 }  // namespace resources

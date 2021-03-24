@@ -5,7 +5,7 @@
 #include <cstring>
 #include <iomanip>
 #include <iostream>
-
+#include <vector>
 #include "sound.h"
 
 wav_sound_meta loadWAV(const char* file_name);
