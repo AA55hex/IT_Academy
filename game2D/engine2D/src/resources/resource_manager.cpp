@@ -163,4 +163,67 @@ std::shared_ptr<sound::wav_sound> resource_manager::get_wav(
   return it->second;
 }
 
+std::shared_ptr<render::texture2D> resource_manager::load_texture_atlas2D(
+    const std::string& texture_name, const std::string& filepath,
+    std::vector<std::string> subtexture_names, unsigned int frame_width,
+    unsigned int frame_height)
+{
+  auto texture{load_texture2D(texture_name, filepath)};
+  if (!texture)
+    {
+      return nullptr;
+    }
+  render::texture2D::subtexture2D buff{};
+
+  const float offset_fix{0.01f};
+
+  const unsigned int tex_width{static_cast<unsigned int>(texture->get_width())};
+  const unsigned int tex_height{
+      static_cast<unsigned int>(texture->get_height())};
+
+  unsigned int current_offset_x{0};
+  unsigned int current_offset_y{tex_height};
+
+  for (const std::string& sub_name : subtexture_names)
+    {
+      buff.left_bottom = glm::vec2{
+          (static_cast<float>(current_offset_x) + offset_fix) /
+              static_cast<float>(tex_width),
+          (static_cast<float>(current_offset_y - frame_height) + offset_fix) /
+              static_cast<float>(tex_height)};
+      buff.right_top = glm::vec2{
+          (static_cast<float>(current_offset_x + frame_width) - offset_fix) /
+              static_cast<float>(tex_width),
+          (static_cast<float>(current_offset_y) - offset_fix) /
+              static_cast<float>(tex_height)};
+
+      current_offset_x += frame_width;
+      if (current_offset_x >= tex_width)
+        {
+          current_offset_x = 0;
+          current_offset_y -= frame_height;
+        }
+
+      texture->add_subtexture(sub_name, buff);
+    }
+  return texture;
+}
+
+std::shared_ptr<render::sprite2D> resource_manager::load_sprite(
+    std::string sprite_name, std::string texture_name, std::string program_name,
+    std::string subtexture_name)
+{
+  auto texture{get_texture2D(texture_name)};
+  auto program{get_shader_program(program_name)};
+  if (!texture || !program)
+    {
+      std::cerr << "Resource_manager: failed to load sprite <" << sprite_name
+                << ">" << std::endl;
+      return nullptr;
+    }
+  sprite_map[sprite_name] =
+      std::make_shared<render::sprite2D>(texture, subtexture_name, program);
+  return sprite_map[sprite_name];
+}
+
 }  // namespace resources

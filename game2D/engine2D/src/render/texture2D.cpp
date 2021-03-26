@@ -1,9 +1,10 @@
 #include "render/texture2D.h"
-
+#include <iostream>
 namespace render
 {
 texture2D::texture2D(int width_, int height_, const void* data,
-                     color_format format)
+                     color_format format, const GLenum filter,
+                     const GLenum wrapMode)
     : height{height_}, width{width_}
 {
   glGenTextures(1, &id);
@@ -11,10 +12,10 @@ texture2D::texture2D(int width_, int height_, const void* data,
   glTexImage2D(GL_TEXTURE_2D, 0, static_cast<GLint>(format), width, height, 0,
                static_cast<GLenum>(format), GL_UNSIGNED_BYTE, data);
 
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 
   glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -55,4 +56,27 @@ void texture2D::active_texture(unsigned int offset)
   GLenum buffer{GL_TEXTURE0 + offset};
   glActiveTexture(buffer);
 }
+
+const texture2D::subtexture2D& texture2D::add_subtexture(
+    std::string key, const subtexture2D& subtexture)
+{
+  subtexture_map[key] = subtexture;
+  return subtexture_map[key];
+}
+const texture2D::subtexture2D& texture2D::add_subtexture(std::string key,
+                                                         glm::vec2 left_bottom,
+                                                         glm::vec2 right_top)
+{
+  subtexture_map[key] = texture2D::subtexture2D{left_bottom, right_top};
+  return subtexture_map[key];
+}
+const texture2D::subtexture2D& texture2D::get_subtexture(std::string key) const
+{
+  auto it = subtexture_map.find(key);
+
+  if (it == subtexture_map.end()) return default_texture;
+
+  return it->second;
+}
+
 }  // namespace render

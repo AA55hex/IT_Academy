@@ -2,6 +2,8 @@
 #include <iostream>
 #include "core/engine.h"
 #include "glm/vec2.hpp"
+#include "input/input_event.h"
+#include "input/input_manager.h"
 #include "render/index_buffer.h"
 #include "render/renderer.h"
 #include "render/shader_program.h"
@@ -42,30 +44,41 @@ struct vertex
 int main()
 {
   using namespace engine;
-  engine::inicialize(640, 480, "test", true);
+  engine::inicialize(1280, 720, "test", true);
 
   resources::resource_manager mgr{"res/"};
   auto prg{mgr.load_shader_program("test_prg", "shaders/test_shader.vert",
                                    "shaders/test_shader.frag")};
-  auto texture{mgr.load_texture2D("texture", "textures/camera_200.png")};
+  auto texture{mgr.load_texture_atlas2D(
+      "texture", "textures/tanks.png",
+      std::vector<std::string>{"test1", "test2", "test3"}, 16, 16)};
+  texture->add_subtexture("test", glm::vec2{1, 1},
+                          glm::vec2{1 - 16.f / 256, 1 - 16.f / 256});
 
   auto sound{mgr.load_wav("highlands", "sound/highlands.wav")};
   using namespace render;
   renderer::clear_color(0.33f, 0.66f, 0.99f, 0.0f);
 
   float size{200.0f / 200};
-  sprite2D sprite{
-      texture, prg, glm::vec2{size, 1}, glm::vec2{-0.5 * size, -0.5}, 1, 15};
+  sprite2D sprite{texture, "test1", prg};
+  sprite2D sprite0{texture, "test2", prg};
+  sprite2D sprite1{texture, "test3", prg};
 
-  float rotation{15};
+  float rotation{0};
   sound::sound_buffer main_buffer{};
   main_buffer.use();
   sound->play();
-  while (true)
+  bool continue_play{true};
+  while (continue_play)
     {
-      sprite.set_rotation(rotation);
-      rotation++;
-      sprite.render();
+      // rotation += 15;
+      input::input_event event{};
+      while (input::input_manager::read_input(&event))
+        {
+          if (event.type == input::event_type::quit) continue_play = false;
+        }
+      sprite.render(glm::vec2{0, 0}, glm::vec2{0.5, 0.5}, rotation);
+      sprite1.render(glm::vec2{-0.5, -0.5}, glm::vec2{0.2, 0.2}, rotation);
       renderer::swap_buffers();
       renderer::clear();
     }

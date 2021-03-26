@@ -3,59 +3,59 @@
 #include <glm/mat4x4.hpp>
 #include <glm/vec2.hpp>
 #include "glad/glad.h"
+#include "render/renderer.h"
 #include "render/shader_program.h"
 #include "render/texture2D.h"
 #include "render/vertex_array.h"
+#include "render/vertex_buffer_descriptor.h"
 namespace render
 {
-sprite2D::sprite2D(std::shared_ptr<texture2D> texture_,
-                   std::shared_ptr<shader_program> program_,
-                   const glm::vec2& size_, const glm::vec2& position_,
-                   float scale_, float rotation_)
-    : program{program_},
-      texture{texture_},
-      position{position_},
-      size{size_},
-      scale{scale_},
-      rotation{rotation_}
+sprite2D::sprite2D(std::shared_ptr<texture2D> texture_, std::string subtexture_,
+                   std::shared_ptr<shader_program> program_)
+    : program{program_}, texture{texture_}
 {
   vba = vertex_array{};
   vba.bind();
-
+  // spite vba description
   float sprite_pos[]{0, 0, 0, 1, 1, 0, 1, 1};
   sprite_vbo = vertex_buffer{sizeof(sprite_pos), sprite_pos};
-  vba.bind_vertex_buffer(sprite_vbo);
+
+  vertex_buffer_descriptor sprite_descriptor{};
+  sprite_descriptor.add_element_descriptor_float(2, false);
+
+  vba.bind_vertex_buffer(sprite_vbo, sprite_descriptor);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 2, GL_FLOAT, false, sizeof(float) * 2, nullptr);
 
-  float tex_pos[]{0, 0, 0, 1, 1, 0, 1, 1};
+  // texture vba description
+  texture2D::subtexture2D subtexture{texture_->get_subtexture(subtexture_)};
+  float tex_pos[]{subtexture.left_bottom.x, subtexture.left_bottom.y,
+                  subtexture.left_bottom.x, subtexture.right_top.y,
+                  subtexture.right_top.x,   subtexture.left_bottom.y,
+                  subtexture.right_top.x,   subtexture.right_top.y};
   texture_vbo = vertex_buffer{sizeof(tex_pos), tex_pos};
-  vba.bind_vertex_buffer(texture_vbo);
+
+  vertex_buffer_descriptor texture_descriptor{};
+  texture_descriptor.add_element_descriptor_float(2, false);
+
+  vba.bind_vertex_buffer(texture_vbo, texture_descriptor);
   glEnableVertexAttribArray(1);
   glVertexAttribPointer(1, 2, GL_FLOAT, false, sizeof(float) * 2, nullptr);
 
+  // index buffer description
   unsigned int indices[]{1, 0, 2, 3};
   vebo = index_buffer{4, indices};
-  vba.bind_index_buffer(vebo);
+  vebo.bind();
 
   vba.detach();
+  vebo.detach();
 }
 
-void sprite2D::set_scale(float new_scale) { scale = new_scale; }
-void sprite2D::set_rotation(float new_rotation) { rotation = new_rotation; }
-void sprite2D::set_program(std::shared_ptr<shader_program> prg)
-{
-  program = prg;
-}
-void sprite2D::set_position(const glm::vec2& new_position)
-{
-  position = new_position;
-}
-void sprite2D::render()
+void sprite2D::render(const glm::vec2& position, const glm::vec2& size,
+                      float rotation)
 {
   glm::mat4x4 model{1};
 
-  // model = glm::translate(model, glm::vec3{position.x, position.y, 0});
   model = glm::translate(model, glm::vec3{position.x + size.x * 0.5f,
                                           position.y + size.y * 0.5f, 0});
   model = glm::rotate(model, glm::radians(rotation), glm::vec3{0, 0, 1});
@@ -71,7 +71,7 @@ void sprite2D::render()
   texture->bind();
   program->set_uniform("s_texture", 0);
 
-  glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, nullptr);
+  renderer::draw(vba, vebo, *program, GL_TRIANGLE_FAN);
   vba.detach();
 }
 

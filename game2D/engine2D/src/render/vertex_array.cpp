@@ -1,5 +1,6 @@
 #include "render/vertex_array.h"
-
+#include "render/vertex_buffer.h"
+#include "render/vertex_buffer_descriptor.h"
 namespace render
 {
 vertex_array::vertex_array()
@@ -8,37 +9,33 @@ vertex_array::vertex_array()
   glBindVertexArray(id);
 }
 
-void vertex_array::bind() { glBindVertexArray(id); }
-void vertex_array::detach() { glBindVertexArray(0); }
+void vertex_array::bind() const { glBindVertexArray(id); }
+void vertex_array::detach() const { glBindVertexArray(0); }
 
-void vertex_array::bind_vertex_buffer(const vertex_buffer& buffer)
+void vertex_array::bind_vertex_buffer(
+    const vertex_buffer& buffer, const vertex_buffer_descriptor& descriptor)
 {
   glBindVertexArray(id);
   buffer.bind();
-}
-void vertex_array::bind_index_buffer(const index_buffer& buffer)
-{
-  glBindVertexArray(id);
-  buffer.bind();
-}
 
-void vertex_array::set_pointer(unsigned int index, int size, bool normalized,
-                               int stride, const void* offset)
-{
-  glBindVertexArray(id);
-  glVertexAttribPointer(index, size, GL_FLOAT, normalized, stride, offset);
-}
+  unsigned int descriptor_size{
+      static_cast<unsigned int>(descriptor.get_descriptors().size())};
 
-void vertex_array::enable_array(unsigned int index)
-{
-  glBindVertexArray(id);
-  glEnableVertexAttribArray(index);
-}
+  auto& descriptors{descriptor.get_descriptors()};
 
-void vertex_array::disable_array(unsigned int index)
-{
-  glBindVertexArray(id);
-  glDisableVertexAttribArray(index);
+  GLbyte* offset{nullptr};
+
+  for (unsigned int pointer{0}; pointer < descriptor_size; pointer++)
+    {
+      va_arrays_count++;
+      auto& element{descriptors[pointer]};
+      offset += element.size;
+
+      glEnableVertexAttribArray(va_arrays_count);
+      glVertexAttribPointer(va_arrays_count, element.size, GL_FLOAT,
+                            element.normalized, descriptor.get_stride(),
+                            offset);
+    }
 }
 
 vertex_array::vertex_array(vertex_array&& vao)

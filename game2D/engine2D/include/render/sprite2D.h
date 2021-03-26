@@ -1,6 +1,8 @@
+#pragma once
 #include <glad/glad.h>
 #include <glm/vec2.hpp>
 #include <memory>
+#include <string>
 #include "index_buffer.h"
 #include "vertex_array.h"
 #include "vertex_buffer.h"
@@ -12,16 +14,11 @@ class shader_program;
 class sprite2D
 {
  public:
-  sprite2D(std::shared_ptr<texture2D> texture,
-           std::shared_ptr<shader_program> program, const glm::vec2& size,
-           const glm::vec2& position, float scale = 1.0f,
-           float rotation = 0.0f);
+  sprite2D(std::shared_ptr<texture2D> texture, std::string subtexture,
+           std::shared_ptr<shader_program> program);
 
-  void set_scale(float new_scale);
-  void set_rotation(float new_rotation);
-  void set_program(std::shared_ptr<shader_program> prg);
-  void set_position(const glm::vec2& position);
-  void render();
+  void render(const glm::vec2& position, const glm::vec2& size,
+              float rotation = 0.0f);
 
   ~sprite2D();
 
@@ -34,10 +31,6 @@ class sprite2D
  private:
   std::shared_ptr<shader_program> program;
   std::shared_ptr<texture2D> texture;
-  glm::vec2 position;
-  glm::vec2 size;
-  float scale{1.0f};
-  float rotation{0.0f};
 
   vertex_array vba;
   vertex_buffer sprite_vbo;

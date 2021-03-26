@@ -2,7 +2,9 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 #include "render/shader_program.h"
+#include "render/sprite2D.h"
 #include "render/texture2D.h"
 #include "sound/wav_sound.h"
 namespace resources
@@ -26,6 +28,16 @@ class resource_manager
   std::shared_ptr<render::texture2D> get_texture2D(
       const std::string& texture_name);
 
+  std::shared_ptr<render::texture2D> load_texture_atlas2D(
+      const std::string& texture_name, const std::string& filepath,
+      std::vector<std::string> subtexture_names, unsigned int frame_width,
+      unsigned int frame_height);
+
+  std::shared_ptr<render::sprite2D> load_sprite(std::string sprite_name,
+                                                std::string texture,
+                                                std::string program,
+                                                std::string subtexture = "");
+
   std::shared_ptr<sound::wav_sound> load_wav(const std::string& wav_name,
                                              const std::string& filepath);
   std::shared_ptr<sound::wav_sound> get_wav(const std::string& wav_name);
@@ -42,6 +54,8 @@ class resource_manager
   std::map<std::string, std::shared_ptr<render::texture2D>> texture_map;
 
   std::map<std::string, std::shared_ptr<sound::wav_sound>> wav_map;
+
+  std::map<std::string, std::shared_ptr<render::sprite2D>> sprite_map;
 
   std::string path;
 };

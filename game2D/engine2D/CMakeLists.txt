@@ -36,12 +36,22 @@ add_library(engine2D STATIC
     include/render/sprite2D.h
     src/render/sprite2D.cpp
 
+    include/render/vertex_buffer_descriptor.h
+    src/render/vertex_buffer_descriptor.cpp
+
 
     include/sound/wav_sound.h
     src/sound/wav_sound.cpp
 
     include/sound/sound_buffer.h
     src/sound/sound_buffer.cpp
+
+
+    include/input/input_manager.h
+    src/input/input_manager.cpp
+
+    include/input/input_event.h
+    src/input/input_event.cpp
 
 
     include/resources/resource_manager.h

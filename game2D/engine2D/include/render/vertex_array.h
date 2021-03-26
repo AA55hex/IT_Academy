@@ -5,21 +5,21 @@
 
 namespace render
 {
+class vertex_buffer;
+class vertex_buffer_descriptor;
+
 class vertex_array
 {
  public:
   vertex_array();
 
-  void bind();
-  void detach();
+  void bind() const;
+  void detach() const;
 
-  void bind_vertex_buffer(const vertex_buffer& buffer);
-  void bind_index_buffer(const index_buffer& buffer);
+  void bind_vertex_buffer(const vertex_buffer& buffer,
+                          const vertex_buffer_descriptor& descriptor);
 
-  void set_pointer(unsigned int index, int size, bool normalized, int stride,
-                   const void* offset);
-  void enable_array(unsigned int index);
-  void disable_array(unsigned int index);
+  unsigned int get_arrays_count() const { return va_arrays_count; }
 
   vertex_array(vertex_array&&);
   vertex_array& operator=(vertex_array&&);
@@ -31,5 +31,6 @@ class vertex_array
 
  private:
   GLuint id{0};
+  unsigned int va_arrays_count{0};
 };
 }  // namespace render

@@ -45,6 +45,7 @@ void dispose()
 
   SDL_GL_DeleteContext(window::gl_context);
   SDL_DestroyWindow(window::window);
+  SDL_Quit();
 }
 
 bool window_init(int width, int height, std::string title, bool gl_debug)

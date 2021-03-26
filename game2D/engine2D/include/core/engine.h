@@ -3,9 +3,9 @@
 #include <string>
 namespace sound
 {
-// class sound_buffer;
 void audio_callback(void* userdata, Uint8* stream, int len);
 }  // namespace sound
+
 namespace engine
 {
 bool inicialize(int width, int height, std::string title,

@@ -1,10 +1,19 @@
 #include "render/renderer.h"
 #include "core/engine.h"
+#include "render/index_buffer.h"
+#include "render/shader_program.h"
+#include "render/vertex_array.h"
 namespace render
 {
-void renderer::draw(GLenum mode, int count, const void* indices)
+void renderer::draw(const vertex_array& vao, const index_buffer& vebo,
+                    const shader_program& program, GLenum mode)
 {
-  glDrawElements(mode, count, GL_UNSIGNED_INT, indices);
+  program.use();
+  vao.bind();
+  vebo.bind();
+
+  glDrawElements(mode, static_cast<int>(vebo.get_count()), GL_UNSIGNED_INT,
+                 nullptr);
 }
 void renderer::set_viewport(int x, int y, int width, int height)
 {
