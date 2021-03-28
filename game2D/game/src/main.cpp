@@ -1,6 +1,7 @@
 #include <glm/vec2.hpp>
 #include <iostream>
 #include "core/engine.h"
+#include "core/igame.h"
 #include "glm/vec2.hpp"
 #include "input/input_event.h"
 #include "input/input_manager.h"
@@ -8,80 +9,72 @@
 #include "render/renderer.h"
 #include "render/shader_program.h"
 #include "render/sprite2D.h"
+#include "render/sprite_animator.h"
 #include "render/vertex_array.h"
 #include "render/vertex_buffer.h"
 #include "resources/resource_manager.h"
 #include "sound/sound_buffer.h"
-struct rgb_color
+class game : public core::igame
 {
-  float r{0};
-  float g{0};
-  float b{0};
-};
+ public:
+  game() {}
+  bool inicialize() override
+  {
+    auto prg{mgr.load_shader_program("test_prg", "shaders/test_shader.vert",
+                                     "shaders/test_shader.frag")};
+    auto texture{mgr.load_texture_atlas2D(
+        "texture", "textures/tanks.png",
+        std::vector<std::string>{"test1", "test2", "test3"}, 16, 16)};
 
-struct position
-{
-  float x{0};
-  float y{0};
-};
+    auto sprite{mgr.load_sprite("sprite", "texture", "test_prg", "test1")};
 
-struct rgb_pos
-{
-  position pos;
-  rgb_color color;
-};
+    animator = render::sprite_animator{sprite};
 
-struct vertex
-{
-  float x{0};
-  float y{0};
-  float z{0};
-  float r{0};
-  float g{0};
-  float b{0};
+    render::frame_descriptor buff{texture->get_subtexture("test1").left_bottom,
+                                  texture->get_subtexture("test1").right_top};
+    animator.add_frame(buff, 200);
+    animator.add_frame({texture->get_subtexture("test2").left_bottom,
+                        texture->get_subtexture("test2").right_top},
+                       200);
+
+    settings.size = glm::vec2{2.f / 16, 2.f / 16};
+    return true;
+  }
+
+  void read_input(double) override
+  {
+    input::input_event event{};
+    while (input::input_manager::read_input(&event))
+      {
+        if (event.type == input::event_type::quit) playing = false;
+        //        if (event.type == input::event_type::mouse)
+        //          {
+        //            settings.position =
+        //            input::input_manager::get_mouse_state();
+        //          }
+      }
+  }
+  void update_data(double duration) override { animator.update(duration); }
+  void render_output() override { animator.render(settings); }
+
+  ~game() override {}
+
+ private:
+  render::sprite_animator animator{nullptr};
+  render::render_settings settings{};
+  resources::resource_manager mgr{"res/"};
 };
 
 int main()
 {
-  using namespace engine;
+  using namespace core;
   engine::inicialize(1280, 720, "test", true);
+  // auto sound{mgr.load_wav("highlands", "sound/highlands.wav")};
 
-  resources::resource_manager mgr{"res/"};
-  auto prg{mgr.load_shader_program("test_prg", "shaders/test_shader.vert",
-                                   "shaders/test_shader.frag")};
-  auto texture{mgr.load_texture_atlas2D(
-      "texture", "textures/tanks.png",
-      std::vector<std::string>{"test1", "test2", "test3"}, 16, 16)};
-  texture->add_subtexture("test", glm::vec2{1, 1},
-                          glm::vec2{1 - 16.f / 256, 1 - 16.f / 256});
+  render::renderer::clear_color(0.f, 0.f, 0.f, 0.0f);
+  game my_game{};
+  engine::play(my_game);
 
-  auto sound{mgr.load_wav("highlands", "sound/highlands.wav")};
-  using namespace render;
-  renderer::clear_color(0.33f, 0.66f, 0.99f, 0.0f);
-
-  float size{200.0f / 200};
-  sprite2D sprite{texture, "test1", prg};
-  sprite2D sprite0{texture, "test2", prg};
-  sprite2D sprite1{texture, "test3", prg};
-
-  float rotation{0};
-  sound::sound_buffer main_buffer{};
-  main_buffer.use();
-  sound->play();
-  bool continue_play{true};
-  while (continue_play)
-    {
-      // rotation += 15;
-      input::input_event event{};
-      while (input::input_manager::read_input(&event))
-        {
-          if (event.type == input::event_type::quit) continue_play = false;
-        }
-      sprite.render(glm::vec2{0, 0}, glm::vec2{0.5, 0.5}, rotation);
-      sprite1.render(glm::vec2{-0.5, -0.5}, glm::vec2{0.2, 0.2}, rotation);
-      renderer::swap_buffers();
-      renderer::clear();
-    }
   engine::dispose();
   return 0;
 }

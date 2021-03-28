@@ -175,7 +175,7 @@ std::shared_ptr<render::texture2D> resource_manager::load_texture_atlas2D(
     }
   render::texture2D::subtexture2D buff{};
 
-  const float offset_fix{0.01f};
+  const float offset_fix{0.1f};
 
   const unsigned int tex_width{static_cast<unsigned int>(texture->get_width())};
   const unsigned int tex_height{
@@ -210,8 +210,8 @@ std::shared_ptr<render::texture2D> resource_manager::load_texture_atlas2D(
 }
 
 std::shared_ptr<render::sprite2D> resource_manager::load_sprite(
-    std::string sprite_name, std::string texture_name, std::string program_name,
-    std::string subtexture_name)
+    const std::string& sprite_name, const std::string& texture_name,
+    const std::string& program_name, const std::string& subtexture_name)
 {
   auto texture{get_texture2D(texture_name)};
   auto program{get_shader_program(program_name)};
@@ -226,4 +226,16 @@ std::shared_ptr<render::sprite2D> resource_manager::load_sprite(
   return sprite_map[sprite_name];
 }
 
+std::shared_ptr<render::sprite2D> resource_manager::get_sprite(
+    const std::string& sprite_name)
+{
+  auto it = sprite_map.find(sprite_name);
+  if (it == sprite_map.end())
+    {
+      std::cerr << "Resource_manager: sprite <" << sprite_name << "> not found"
+                << std::endl;
+      return nullptr;
+    }
+  return it->second;
+}
 }  // namespace resources

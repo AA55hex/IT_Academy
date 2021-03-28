@@ -1,32 +1,24 @@
 #include <core/engine.h>
+#include <core/igame.h>
 #include <glad/glad.h>
+#include <render/renderer.h>
 #include <sound/sound_buffer.h>
 #include <algorithm>
+#include <chrono>
 #include <cstring>
 #include <iostream>
 #include <string>
 
-namespace engine
+namespace core
 {
-namespace audio
+bool engine::inicialize(int width, int height, std::string title, bool gl_debug)
 {
-SDL_AudioDeviceID audio_device{};
-SDL_AudioSpec audio_device_spec{};
-}  // namespace audio
-
-namespace window
-{
-SDL_Window* window{};
-SDL_GLContext gl_context{};
-int height{0};
-int width{0};
-}  // namespace window
-
-bool window_init(int width, int height, std::string title, bool gl_debug);
-bool audio_init();
-
-bool inicialize(int width, int height, std::string title, bool gl_debug)
-{
+  if (inicialized)
+    {
+      std::cerr << "engine:: inicialize error: engine already inicialized"
+                << std::endl;
+      return false;
+    }
   const int init_result = SDL_Init(
       SDL_INIT_TIMER | SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_EVENTS |
       SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | SDL_INIT_GAMECONTROLLER);
@@ -34,24 +26,20 @@ bool inicialize(int width, int height, std::string title, bool gl_debug)
   if (init_result != 0)
     {
       const char* err_message = SDL_GetError();
-      std::cerr << "error: failed call SDL_Init: " << err_message << std::endl;
-      return false;
+      std::cerr << "engine:: inicialize error: failed call SDL_Init: "
+                << err_message << std::endl;
+      inicialized = false;
+      return inicialized;
     }
-  return window_init(width, height, title, gl_debug) && audio_init();
-}
-void dispose()
-{
-  SDL_CloseAudioDevice(audio::audio_device);
-
-  SDL_GL_DeleteContext(window::gl_context);
-  SDL_DestroyWindow(window::window);
-  SDL_Quit();
+  inicialized = window_init(width, height, title, gl_debug) && audio_init();
+  return inicialized;
 }
 
-bool window_init(int width, int height, std::string title, bool gl_debug)
+bool engine::window_init(int width, int height, std::string title,
+                         bool gl_debug)
 {
-  window::width = width;
-  window::height = height;
+  window.width = width;
+  window.height = height;
 
   if (gl_debug)
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
@@ -60,19 +48,19 @@ bool window_init(int width, int height, std::string title, bool gl_debug)
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 
-  window::window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED,
-                                    SDL_WINDOWPOS_CENTERED, width, height,
-                                    SDL_WINDOW_OPENGL);
+  window.window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED,
+                                   SDL_WINDOWPOS_CENTERED, width, height,
+                                   SDL_WINDOW_OPENGL);
 
-  if (window::window == nullptr)
+  if (window.window == nullptr)
     {
       const char* err_log{SDL_GetError()};
       std::cerr << "engine inicializer::Failed to create window: " << err_log;
       return false;
     }
 
-  window::gl_context = SDL_GL_CreateContext(window::window);
-  SDL_GL_MakeCurrent(window::window, window::gl_context);
+  window.gl_context = SDL_GL_CreateContext(window.window);
+  SDL_GL_MakeCurrent(window.window, window.gl_context);
 
   if (!gladLoadGLES2Loader(SDL_GL_GetProcAddress))
     {
@@ -81,8 +69,7 @@ bool window_init(int width, int height, std::string title, bool gl_debug)
     }
   return true;
 }
-
-bool audio_init()
+bool engine::audio_init()
 {
   if (SDL_Init(SDL_INIT_AUDIO) < 0)
     {
@@ -106,10 +93,10 @@ bool audio_init()
 
   const int32_t allow_changes = 0;
 
-  audio::audio_device = SDL_OpenAudioDevice(device_name, is_capture_device,
-                                            &disired, &returned, allow_changes);
-  audio::audio_device_spec = returned;
-  if (audio::audio_device == 0)
+  audio.audio_device = SDL_OpenAudioDevice(device_name, is_capture_device,
+                                           &disired, &returned, allow_changes);
+  audio.audio_device_spec = returned;
+  if (audio.audio_device == 0)
     {
       std::cerr << "error: failed to open audio device: " << SDL_GetError()
                 << std::endl;
@@ -122,11 +109,54 @@ bool audio_init()
       std::cerr << "error: disired != returned audio device settings!";
       return EXIT_FAILURE;
     }
-  SDL_PauseAudioDevice(audio::audio_device, SDL_FALSE);
+  SDL_PauseAudioDevice(audio.audio_device, SDL_FALSE);
   return true;
 }
 
-}  // namespace engine
+void engine::dispose()
+{
+  if (!inicialized)
+    {
+      std::cerr << "engine:: inicialize error: engine is not inicialized"
+                << std::endl;
+      return;
+    }
+  SDL_CloseAudioDevice(audio.audio_device);
+
+  SDL_GL_DeleteContext(window.gl_context);
+  SDL_DestroyWindow(window.window);
+  SDL_Quit();
+  inicialized = false;
+}
+
+void engine::play(igame& game)
+{
+  if (!game.is_inicialized() && !game.inicialize())
+    {
+      return;
+    }
+  auto last_time = std::chrono::high_resolution_clock::now();
+  while (game.is_playing())
+    {
+      auto current_time = std::chrono::high_resolution_clock::now();
+      double duration =
+          std::chrono::duration<double, std::milli>(current_time - last_time)
+              .count();
+      last_time = current_time;
+
+      game.read_input(duration);
+      game.update_data(duration);
+
+      render::renderer::clear();
+
+      game.render_output();
+
+      SDL_GL_SwapWindow(window.window);
+    }
+}
+
+}  // namespace core
+
 namespace sound
 {
 void audio_callback(void*, Uint8* stream, int len)
@@ -156,9 +186,10 @@ void audio_callback(void*, Uint8* stream, int len)
                   uint32_t length{delta > stream_length ? stream_length
                                                         : delta};
 
-                  SDL_MixAudioFormat(stream, pos_ptr,
-                                     engine::audio::audio_device_spec.format,
-                                     length, SDL_MIX_MAXVOLUME);
+                  SDL_MixAudioFormat(
+                      stream, pos_ptr,
+                      core::engine::audio.audio_device_spec.format, length,
+                      SDL_MIX_MAXVOLUME);
 
                   it->position += length;
                 }

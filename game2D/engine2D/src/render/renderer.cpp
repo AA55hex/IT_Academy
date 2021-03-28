@@ -25,5 +25,5 @@ void renderer::clear_color(float r, float g, float b, float a)
 }
 void renderer::clear() { glClear(GL_COLOR_BUFFER_BIT); }
 
-void renderer::swap_buffers() { SDL_GL_SwapWindow(engine::window::window); }
+// void renderer::swap_buffers() { SDL_GL_SwapWindow(engine::window::window); }
 }  // namespace render

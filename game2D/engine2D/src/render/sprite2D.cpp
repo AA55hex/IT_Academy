@@ -29,10 +29,11 @@ sprite2D::sprite2D(std::shared_ptr<texture2D> texture_, std::string subtexture_,
 
   // texture vba description
   texture2D::subtexture2D subtexture{texture_->get_subtexture(subtexture_)};
-  float tex_pos[]{subtexture.left_bottom.x, subtexture.left_bottom.y,
-                  subtexture.left_bottom.x, subtexture.right_top.y,
-                  subtexture.right_top.x,   subtexture.left_bottom.y,
-                  subtexture.right_top.x,   subtexture.right_top.y};
+  frame = frame_descriptor{subtexture.left_bottom, subtexture.right_top};
+  float tex_pos[]{frame.left_bottom_uv.x, frame.left_bottom_uv.y,
+                  frame.left_bottom_uv.x, frame.right_top_uv.y,
+                  frame.right_top_uv.x,   frame.left_bottom_uv.y,
+                  frame.right_top_uv.x,   frame.right_top_uv.y};
   texture_vbo = vertex_buffer{sizeof(tex_pos), tex_pos};
 
   vertex_buffer_descriptor texture_descriptor{};
@@ -51,28 +52,68 @@ sprite2D::sprite2D(std::shared_ptr<texture2D> texture_, std::string subtexture_,
   vebo.detach();
 }
 
-void sprite2D::render(const glm::vec2& position, const glm::vec2& size,
-                      float rotation)
+void sprite2D::render(const render_settings& settings)
 {
   glm::mat4x4 model{1};
 
-  model = glm::translate(model, glm::vec3{position.x + size.x * 0.5f,
-                                          position.y + size.y * 0.5f, 0});
-  model = glm::rotate(model, glm::radians(rotation), glm::vec3{0, 0, 1});
-  model = glm::translate(model, glm::vec3{size.x * -0.5f, size.y * -0.5f, 0});
-  model = glm::scale(model, glm::vec3{size, 1});
+  model = glm::translate(
+      model, glm::vec3{settings.position.x + settings.size.x * 0.5f,
+                       settings.position.y + settings.size.y * 0.5f, 0});
+  model =
+      glm::rotate(model, glm::radians(settings.rotation), glm::vec3{0, 0, 1});
+  model = glm::translate(
+      model, glm::vec3{settings.size.x * -0.5f, settings.size.y * -0.5f, 0});
+  model = glm::scale(model, glm::vec3{settings.size, 1});
 
   vba.bind();
 
   program->use();
-  program->set_uniform("model", model);
+  program->set_uniform("s_model", model);
 
   texture2D::active_texture(0);
   texture->bind();
   program->set_uniform("s_texture", 0);
 
+  program->set_uniform("s_layer", settings.layer);
+
   renderer::draw(vba, vebo, *program, GL_TRIANGLE_FAN);
   vba.detach();
+  vebo.detach();
+}
+
+void sprite2D::render(const render_settings& settings,
+                      const frame_descriptor& f_discriptor)
+{
+  frame = f_discriptor;
+  float tex_pos[]{frame.left_bottom_uv.x, frame.left_bottom_uv.y,
+                  frame.left_bottom_uv.x, frame.right_top_uv.y,
+                  frame.right_top_uv.x,   frame.left_bottom_uv.y,
+                  frame.right_top_uv.x,   frame.right_top_uv.y};
+  texture_vbo.update(sizeof(tex_pos), tex_pos);
+
+  glm::mat4x4 model{1};
+  model = glm::translate(
+      model, glm::vec3{settings.position.x + settings.size.x * 0.5f,
+                       settings.position.y + settings.size.y * 0.5f, 0});
+  model =
+      glm::rotate(model, glm::radians(settings.rotation), glm::vec3{0, 0, 1});
+  model = glm::translate(
+      model, glm::vec3{settings.size.x * -0.5f, settings.size.y * -0.5f, 0});
+  model = glm::scale(model, glm::vec3{settings.size, 1});
+
+  vba.bind();
+
+  program->use();
+  program->set_uniform("s_model", model);
+
+  texture2D::active_texture(0);
+  texture->bind();
+
+  program->set_uniform("s_layer", settings.layer);
+
+  renderer::draw(vba, vebo, *program, GL_TRIANGLE_FAN);
+  vba.detach();
+  vebo.detach();
 }
 
 sprite2D::~sprite2D() {}

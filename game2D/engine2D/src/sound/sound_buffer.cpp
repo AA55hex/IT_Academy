@@ -12,20 +12,20 @@ void sound_buffer::detach() { current_buffer = nullptr; }
 
 void sound_buffer::push_playback(playback_ptr playback)
 {
-  SDL_LockAudioDevice(engine::audio::audio_device);
+  SDL_LockAudioDevice(core::engine::audio.audio_device);
 
   playback_list.push_back(playback);
 
-  SDL_UnlockAudioDevice(engine::audio::audio_device);
+  SDL_UnlockAudioDevice(core::engine::audio.audio_device);
 }
 
 void sound_buffer::clear()
 {
-  SDL_LockAudioDevice(engine::audio::audio_device);
+  SDL_LockAudioDevice(core::engine::audio.audio_device);
 
   playback_list.clear();
 
-  SDL_UnlockAudioDevice(engine::audio::audio_device);
+  SDL_UnlockAudioDevice(core::engine::audio.audio_device);
 }
 
 sound_buffer::~sound_buffer()

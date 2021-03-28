@@ -9,7 +9,7 @@ class shader_program;
 class renderer
 {
  public:
-  static void swap_buffers();
+  // static void swap_buffers();
   static void draw(const vertex_array& vao, const index_buffer& vebo,
                    const shader_program& program, GLenum mode = GL_TRIANGLES);
   static void set_viewport(int x, int y, int width, int height);

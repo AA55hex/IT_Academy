@@ -33,10 +33,10 @@ class resource_manager
       std::vector<std::string> subtexture_names, unsigned int frame_width,
       unsigned int frame_height);
 
-  std::shared_ptr<render::sprite2D> load_sprite(std::string sprite_name,
-                                                std::string texture,
-                                                std::string program,
-                                                std::string subtexture = "");
+  std::shared_ptr<render::sprite2D> load_sprite(
+      const std::string& sprite_name, const std::string& texture,
+      const std::string& program, const std::string& subtexture = "");
+  std::shared_ptr<render::sprite2D> get_sprite(const std::string& sprite_name);
 
   std::shared_ptr<sound::wav_sound> load_wav(const std::string& wav_name,
                                              const std::string& filepath);

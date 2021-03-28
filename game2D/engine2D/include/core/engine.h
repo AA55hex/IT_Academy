@@ -3,49 +3,53 @@
 #include <string>
 namespace sound
 {
+class sound_buffer;
 void audio_callback(void* userdata, Uint8* stream, int len);
 }  // namespace sound
 
-namespace engine
+namespace render
 {
-bool inicialize(int width, int height, std::string title,
-                bool gl_debug = false);
-void dispose();
-namespace audio
+class renderer;
+}
+
+namespace core
 {
-extern SDL_AudioDeviceID audio_device;
-extern SDL_AudioSpec audio_device_spec;
-}  // namespace audio
-
-namespace window
+class igame;
+class engine
 {
-extern SDL_Window* window;
-extern SDL_GLContext gl_context;
-extern int height;
-extern int width;
-}  // namespace window
+ public:
+  engine() = delete;
+  static bool inicialize(int width, int height, std::string title,
+                         bool gl_debug = false);
+  static void dispose();
+  static bool is_inicialized() { return inicialized; }
 
-// class engine
-//{
-// public:
-//  engine();
-//  bool inicialize();
-//  void dispose();
+  static void play(igame& game);
 
-// private:
-//  friend class sound::sound_buffer;
-//  friend class render::renderer;
-//  struct
-//  {
-//    SDL_AudioDeviceID audio_device;
-//    SDL_AudioSpec audio_device_spec;
-//  } audio;
-//  struct
-//  {
-//    SDL_Window* window;
-//    SDL_GLContext gl_context;
-//    int height;
-//    int width;
-//  } window;
-//};
-}  // namespace engine
+ private:
+  friend class sound::sound_buffer;
+  friend void sound::audio_callback(void*, Uint8* stream, int len);
+
+  inline static bool inicialized{false};
+  static bool window_init(int width, int height, std::string title,
+                          bool gl_debug);
+  static bool audio_init();
+
+  struct audio_data
+  {
+    SDL_AudioDeviceID audio_device;
+    SDL_AudioSpec audio_device_spec;
+  };
+
+  struct window_data
+  {
+    SDL_Window* window;
+    SDL_GLContext gl_context;
+    int height;
+    int width;
+  };
+
+  inline static audio_data audio{};
+  inline static window_data window{};
+};
+}  // namespace core

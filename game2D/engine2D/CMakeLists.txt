@@ -14,6 +14,8 @@ add_library(engine2D STATIC
     include/core/engine.h
     src/core/engine.cpp
 
+    include/core/igame.h
+
 
     include/render/shader_program.h
     src/render/shader_program.cpp
@@ -35,6 +37,11 @@ add_library(engine2D STATIC
 
     include/render/sprite2D.h
     src/render/sprite2D.cpp
+
+    include/render/sprite_animator.h
+    src/render/sprite_animator.cpp
+
+    include/render/frame_structures.h
 
     include/render/vertex_buffer_descriptor.h
     src/render/vertex_buffer_descriptor.cpp
