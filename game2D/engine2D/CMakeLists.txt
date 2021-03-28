@@ -64,10 +64,16 @@ add_library(engine2D STATIC
     include/resources/resource_manager.h
     src/resources/resource_manager.cpp
 
-    include/resources/stb_image.h)
+    include/resources/stb_image.h
+
+
+    pimpl/include/render/engine_impl.h)
 
 target_include_directories(engine2D PUBLIC
     include/)
+
+target_include_directories(engine2D PRIVATE
+    pimpl/include/)
     
 target_compile_features(engine2D PRIVATE cxx_std_17)
 

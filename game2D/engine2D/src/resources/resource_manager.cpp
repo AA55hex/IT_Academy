@@ -173,7 +173,7 @@ std::shared_ptr<render::texture2D> resource_manager::load_texture_atlas2D(
     {
       return nullptr;
     }
-  render::texture2D::subtexture2D buff{};
+  render::frame_descriptor buff{};
 
   const float offset_fix{0.1f};
 
@@ -186,12 +186,12 @@ std::shared_ptr<render::texture2D> resource_manager::load_texture_atlas2D(
 
   for (const std::string& sub_name : subtexture_names)
     {
-      buff.left_bottom = glm::vec2{
+      buff.left_bottom_uv = glm::vec2{
           (static_cast<float>(current_offset_x) + offset_fix) /
               static_cast<float>(tex_width),
           (static_cast<float>(current_offset_y - frame_height) + offset_fix) /
               static_cast<float>(tex_height)};
-      buff.right_top = glm::vec2{
+      buff.right_top_uv = glm::vec2{
           (static_cast<float>(current_offset_x + frame_width) - offset_fix) /
               static_cast<float>(tex_width),
           (static_cast<float>(current_offset_y) - offset_fix) /

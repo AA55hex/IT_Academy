@@ -28,8 +28,8 @@ sprite2D::sprite2D(std::shared_ptr<texture2D> texture_, std::string subtexture_,
   glVertexAttribPointer(0, 2, GL_FLOAT, false, sizeof(float) * 2, nullptr);
 
   // texture vba description
-  texture2D::subtexture2D subtexture{texture_->get_subtexture(subtexture_)};
-  frame = frame_descriptor{subtexture.left_bottom, subtexture.right_top};
+  frame_descriptor subtexture{texture_->get_subtexture(subtexture_)};
+  frame = subtexture;
   float tex_pos[]{frame.left_bottom_uv.x, frame.left_bottom_uv.y,
                   frame.left_bottom_uv.x, frame.right_top_uv.y,
                   frame.right_top_uv.x,   frame.left_bottom_uv.y,

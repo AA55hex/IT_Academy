@@ -57,20 +57,20 @@ void texture2D::active_texture(unsigned int offset)
   glActiveTexture(buffer);
 }
 
-const texture2D::subtexture2D& texture2D::add_subtexture(
-    std::string key, const subtexture2D& subtexture)
+const frame_descriptor& texture2D::add_subtexture(
+    std::string key, const frame_descriptor& subtexture)
 {
   subtexture_map[key] = subtexture;
   return subtexture_map[key];
 }
-const texture2D::subtexture2D& texture2D::add_subtexture(std::string key,
-                                                         glm::vec2 left_bottom,
-                                                         glm::vec2 right_top)
+const frame_descriptor& texture2D::add_subtexture(std::string key,
+                                                  glm::vec2 left_bottom_uv,
+                                                  glm::vec2 right_top_uv)
 {
-  subtexture_map[key] = texture2D::subtexture2D{left_bottom, right_top};
+  subtexture_map[key] = frame_descriptor{left_bottom_uv, right_top_uv};
   return subtexture_map[key];
 }
-const texture2D::subtexture2D& texture2D::get_subtexture(std::string key) const
+const frame_descriptor& texture2D::get_subtexture(std::string key) const
 {
   auto it = subtexture_map.find(key);
 

@@ -14,6 +14,7 @@
 #include "render/vertex_buffer.h"
 #include "resources/resource_manager.h"
 #include "sound/sound_buffer.h"
+
 class game : public core::igame
 {
  public:
@@ -30,12 +31,8 @@ class game : public core::igame
 
     animator = render::sprite_animator{sprite};
 
-    render::frame_descriptor buff{texture->get_subtexture("test1").left_bottom,
-                                  texture->get_subtexture("test1").right_top};
-    animator.add_frame(buff, 200);
-    animator.add_frame({texture->get_subtexture("test2").left_bottom,
-                        texture->get_subtexture("test2").right_top},
-                       200);
+    animator.add_frame(texture->get_subtexture("test1"), 400);
+    animator.add_frame(texture->get_subtexture("test2"), 400);
 
     settings.size = glm::vec2{2.f / 16, 2.f / 16};
     return true;

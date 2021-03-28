@@ -2,6 +2,7 @@
 #include <glm/vec2.hpp>
 #include <map>
 #include <string>
+#include "render/frame_structures.h"
 namespace render
 {
 enum class color_format
@@ -17,12 +18,6 @@ enum class color_format
 class texture2D
 {
  public:
-  struct subtexture2D
-  {
-    glm::vec2 left_bottom{0.f};
-    glm::vec2 right_top{1.f};
-  };
-
   texture2D(int width, int height, const void* data, color_format format,
             const GLenum filter = GL_LINEAR,
             const GLenum wrapMode = GL_CLAMP_TO_EDGE);
@@ -37,11 +32,11 @@ class texture2D
   texture2D(texture2D&&);
   texture2D& operator=(texture2D&&);
 
-  const subtexture2D& add_subtexture(std::string key,
-                                     const subtexture2D& subtexture);
-  const subtexture2D& add_subtexture(std::string key, glm::vec2 left_bottom,
-                                     glm::vec2 right_top);
-  const subtexture2D& get_subtexture(std::string key) const;
+  const frame_descriptor& add_subtexture(std::string key,
+                                         const frame_descriptor& subtexture);
+  const frame_descriptor& add_subtexture(std::string key, glm::vec2 left_bottom,
+                                         glm::vec2 right_top);
+  const frame_descriptor& get_subtexture(std::string key) const;
 
   texture2D(texture2D&) = delete;
   texture2D& operator=(texture2D&) = delete;
@@ -54,8 +49,8 @@ class texture2D
   int height{0};
   int width{0};
 
-  std::map<std::string, subtexture2D> subtexture_map{};
-  const texture2D::subtexture2D default_texture{};
+  std::map<std::string, frame_descriptor> subtexture_map{};
+  const frame_descriptor default_texture{};
 };
 
 }  // namespace render
