@@ -6,16 +6,34 @@ namespace render
 {
 class sprite2D;
 
+/*!
+ * \brief Аниматор спрайта
+ * \note Аниматор спрайта работает только с текстурными атласами, но не с
+ * массивами текстур
+ */
 class sprite_animator
 {
  public:
+  /*!
+   * \brief Фрейм анимации
+   * Воспомогательная структура, согласно которой отрисовывается спрайт
+   */
   struct frame
   {
-    const frame_descriptor discriptor;
-    double duration{0};
+    const frame_descriptor discriptor;  ///< описатель области кадра
+    double duration{0};  ///< длительность кадра в миллисекундах
   };
+
+  /*!
+   * \brief Инициализация аниматора
+   * \param sprite  спрайт, используемый для анимации
+   */
   sprite_animator(std::shared_ptr<sprite2D> sprite);
 
+  /*!
+   * \brief Обновление  состояния анимации
+   * \param duration    прошедшее время в миллисекундах
+   */
   void update(double duration);
   void render(const render_settings& settings);
 

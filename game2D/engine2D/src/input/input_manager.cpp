@@ -2,7 +2,7 @@
 #include <input/input_manager.h>
 #include <algorithm>
 #include <array>
-
+#include "core/engine.h"
 namespace input
 {
 static bool translate_key(SDL_KeyboardEvent event, keyboard_key& result);
@@ -68,8 +68,15 @@ bool input_manager::read_input(input_event* event)
 glm::vec2 input_manager::get_mouse_state()
 {
   int x, y;
+  const float window_width{static_cast<float>(core::engine::window.width)};
+  const float window_height{static_cast<float>(core::engine::window.height)};
+
   SDL_GetMouseState(&x, &y);
-  glm::vec2 mouse_state{x, y};
+
+  const float x_norm{(x * 2) / window_width - 1.f};
+  const float y_norm{(y * 2) / window_height - 1.f};
+
+  glm::vec2 mouse_state{x_norm, y_norm};
   return mouse_state;
 }
 

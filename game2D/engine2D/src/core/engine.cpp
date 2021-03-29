@@ -8,7 +8,7 @@
 #include <cstring>
 #include <iostream>
 #include <string>
-
+#include "input/input_manager.h"
 namespace core
 {
 bool engine::inicialize(int width, int height, std::string title, bool gl_debug)

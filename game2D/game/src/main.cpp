@@ -34,7 +34,7 @@ class game : public core::igame
     animator.add_frame(texture->get_subtexture("test1"), 400);
     animator.add_frame(texture->get_subtexture("test2"), 400);
 
-    settings.size = glm::vec2{2.f / 16, 2.f / 16};
+    settings.size = glm::vec2{1.f / 20, 1.f / 20};
     return true;
   }
 
@@ -53,13 +53,16 @@ class game : public core::igame
   }
   void update_data(double duration) override { animator.update(duration); }
   void render_output() override { animator.render(settings); }
-
+  bool is_playing() override { return playing; }
+  bool is_inicialized() override { return init; }
   ~game() override {}
 
  private:
   render::sprite_animator animator{nullptr};
   render::render_settings settings{};
   resources::resource_manager mgr{"res/"};
+  bool playing{true};
+  bool init{false};
 };
 
 int main()

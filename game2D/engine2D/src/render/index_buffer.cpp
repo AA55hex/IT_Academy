@@ -19,9 +19,9 @@ void index_buffer::detach() const { glBindBuffer(buffer_type, 0); }
 
 void index_buffer::update(const unsigned int count_, const unsigned int* data)
 {
-  count = count_;
+  // count = count_;
   glBindBuffer(buffer_type, id);
-  glBufferSubData(buffer_type, 0, count * element_size, data);
+  glBufferSubData(buffer_type, 0, count_ * element_size, data);
 }
 
 index_buffer::index_buffer(index_buffer&& buffer)
@@ -45,6 +45,7 @@ index_buffer& index_buffer::operator=(index_buffer&& buffer)
 
 void index_buffer::restore(const unsigned int size, const unsigned int* data)
 {
+  count = size;
   glBindBuffer(buffer_type, id);
   glBufferData(buffer_type, size, data, GL_STATIC_DRAW);
 }
