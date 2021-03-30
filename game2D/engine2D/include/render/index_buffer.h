@@ -22,6 +22,7 @@ class index_buffer
    * \param data    указатель на элементы массива
    */
   index_buffer(const unsigned int count, const unsigned int* data);
+
   /*!
    * \brief Активация буфера
    * Привязывает буфер к контексту окна, делая его активным.
@@ -40,16 +41,23 @@ class index_buffer
    * \brief Перезагрузка буфера
    * Сбрасывает массив данных в буфере и создает новый, заполняя его новыми
    * данными.
-   * \param size    количество элементов в массиве
+   * \param count    количество элементов в массиве
    * \param data    указатель на элементы массива
+   * \note Данные data могут быть удалены после использования
+   * \note Буфер автоматически выполняет команду render::index_buffer::bind()
+   * \sa render::index_buffer::bind()
    */
-  void restore(const unsigned int size, const unsigned int* data);
+  void restore(const unsigned int count, const unsigned int* data);
+
   /*!
    * \brief Изменение буфера
    * Перезаписывает данные буфера, начиная с первого элемента массива новыми
    * данными.
-   * \param size    количество элементов в массиве
+   * \param count    количество элементов в массиве
    * \param data    указатель на элементы массива
+   * \note Данные data могут быть удалены после использования
+   * \note Буфер автоматически выполняет команду render::index_buffer::bind()
+   * \sa render::index_buffer::bind()
    */
   void update(const unsigned int count, const unsigned int* data);
 

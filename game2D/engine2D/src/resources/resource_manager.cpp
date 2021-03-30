@@ -8,6 +8,16 @@ namespace resources
 {
 resource_manager::resource_manager(const std::string& dir_path)
 {
+  path_configure(dir_path);
+}
+
+void resource_manager::reset_path(const std::string& dir_path)
+{
+  path_configure(dir_path);
+}
+
+void resource_manager::path_configure(const std::string& dir_path)
+{
   size_t last_pos{dir_path.find_last_of("/\\")};
   path = dir_path;
   if (path.length() != 0 && path.length() - 1 != last_pos)

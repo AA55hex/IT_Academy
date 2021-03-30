@@ -33,16 +33,50 @@ class sprite_animator
   /*!
    * \brief Обновление  состояния анимации
    * \param duration    прошедшее время в миллисекундах
+   * \note За один вызов функция может перейти только на 1 кадр, не смотря на
+   * значение duration.
    */
   void update(double duration);
+  /*!
+   * \brief Отрисовка активного фрейма
+   * \param settings    параметры отрисовки
+   * \note Если аниматор не содержит кадров, функция обратится к функции
+   * sprite2D::render(const render_settings& settings)
+   * \sa render::sprite2D::render(const render_settings& settings)
+   */
   void render(const render_settings& settings);
 
+  /*!
+   * \brief Добавление фрейма в конец списка кадров
+   * \param discriptor  описатель области фрейма
+   * \param duration    продолжительность кадра, мс
+   * \note Допустимо 0 значение duration.
+   * Отрицательное значение вызовет зацикливание на кадре.
+   */
   void add_frame(const frame_descriptor& discriptor, double duration);
+
+  /*!
+   * \brief Удаление списка кадров
+   * Очищает весь список кадров
+   */
   void clear_frames();
 
+  /*!
+   * \brief Возврат активного кадра
+   * \return Активный кадр анимации
+   */
   const frame* current_frame();
 
-  unsigned int get_frames_count() { return frames.size(); }
+  /*!
+   * \brief Возарвт количества кадров в аниматоре
+   * \return Количество кадров в аниматоре
+   */
+  size_t get_frames_count() { return frames.size(); }
+
+  /*!
+   * \brief Возврат общей продолжительности анимации
+   * \return Сумма продолжительностей всех кадров
+   */
   double get_duration() { return summary_duration; }
 
  private:

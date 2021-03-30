@@ -47,7 +47,10 @@ class shader_program
    * \brief Установка uniform-поля
    * \param u_name  имя uniform-поля в шейдере
    * \param value   значение для заполнения
+   * \note для указания значения для типа sampler2D необходима вписать индекс
+   * текстурного буфера, к кторому привязана текстура.
    * \return
+   * \sa render::texture2D
    */
   bool set_uniform(std::string u_name, int value);
 
