@@ -21,54 +21,146 @@ class game : public core::igame
   game() {}
   bool inicialize() override
   {
+    int i{0};
+    i++;
+    auto snd{mgr.load_wav("bg_sound", "sound/highlands.wav")};
+    mgr.load_wav("tank", "sound/tank.wav");
+    snd_buffer.use();
+    snd->play(0, true);
+
     auto prg{mgr.load_shader_program("test_prg", "shaders/test_shader.vert",
                                      "shaders/test_shader.frag")};
-    auto texture{mgr.load_texture_atlas2D(
+    auto tank_tex{mgr.load_texture_atlas2D(
         "texture", "textures/tanks.png",
         std::vector<std::string>{"test1", "test2", "test3"}, 16, 16)};
+    auto tank_map_tex{mgr.load_texture2D("tank_map", "textures/tank_map.png")};
 
-    auto sprite{mgr.load_sprite("sprite", "texture", "test_prg", "test1")};
+    auto s_tank{mgr.load_sprite("sprite", "texture", "test_prg", "test1")};
+    auto s_map{mgr.load_sprite("tank_map", "tank_map", "test_prg")};
 
-    animator = render::sprite_animator{sprite};
+    animator = render::sprite_animator{s_tank};
 
-    animator.add_frame(texture->get_subtexture("test1"), 400);
-    animator.add_frame(texture->get_subtexture("test2"), 400);
+    animator.add_frame(tank_tex->get_subtexture("test1"), 400);
+    animator.add_frame(tank_tex->get_subtexture("test2"), 400);
 
-    settings.size = glm::vec2{1.f / 20, 1.f / 20};
-    return true;
+    tank_settings.size = glm::vec2{2.f / 16, 2.f / 16};
+    init = true;
+    return init;
   }
 
   void read_input(double) override
   {
-    input::input_event event{};
-    while (input::input_manager::read_input(&event))
+    using namespace input;
+    input_event event{};
+    while (input_manager::read_input(&event))
       {
-        if (event.type == input::event_type::quit) playing = false;
-        //        if (event.type == input::event_type::mouse)
-        //          {
-        //            settings.position =
-        //            input::input_manager::get_mouse_state();
-        //          }
+        switch (event.type)
+          {
+            case event_type::quit:
+              playing = false;
+              break;
+            case event_type::keyboard:
+              {
+                const float movespeed{0.005f};
+                if (event.state == event_state::key_down)
+                  {
+                    switch (event.key)
+                      {
+                        case keyboard_key::w:
+                          tank_move.x = movespeed;
+                          break;
+                        case keyboard_key::a:
+                          tank_move.y = movespeed;
+                          break;
+                        case keyboard_key::s:
+                          tank_move.z = movespeed;
+                          break;
+                        case keyboard_key::d:
+                          tank_move.w = movespeed;
+                          break;
+                        default:
+                          break;
+                      }
+                  }
+                else
+                  {
+                    switch (event.key)
+                      {
+                        case keyboard_key::w:
+                          tank_move.x = 0;
+                          break;
+                        case keyboard_key::a:
+                          tank_move.y = 0;
+                          break;
+                        case keyboard_key::s:
+                          tank_move.z = 0;
+                          break;
+                        case keyboard_key::d:
+                          tank_move.w = 0;
+                          break;
+                        case keyboard_key::space:
+                          mgr.get_wav("tank")->play();
+                          break;
+                        default:
+                          break;
+                      }
+                  }
+                break;
+              }
+            default:
+              break;
+          }
       }
   }
-  void update_data(double duration) override { animator.update(duration); }
-  void render_output() override { animator.render(settings); }
+  void update_data(double duration) override
+  {
+    glm::vec2 movement{tank_move.w - tank_move.y, tank_move.x - tank_move.z};
+    if (movement.x != 0.f || movement.y != 0.f)
+      {
+        float t_hipo{static_cast<float>(
+            std::sqrt(movement.x * movement.x + movement.y * movement.y))};
+
+        const float cos{movement.y / t_hipo};
+        const float pi_rel{180.f / static_cast<float>(M_PI)};
+        const float acos{std::acos(cos)};
+
+        tank_settings.rotation = acos * pi_rel;
+        if (movement.x > 0) tank_settings.rotation = -tank_settings.rotation;
+        tank_settings.position += movement;
+      }
+
+    animator.update(duration);
+  }
+  void render_output() override
+  {
+    animator.render(tank_settings);
+    mgr.get_sprite("tank_map")->render(map_settings);
+  }
+
   bool is_playing() override { return playing; }
   bool is_inicialized() override { return init; }
+  glm::vec4 tank_move{0};  // w-a-s-d
   ~game() override {}
 
  private:
   render::sprite_animator animator{nullptr};
-  render::render_settings settings{};
+  render::render_settings tank_settings{};
+
+  const render::render_settings map_settings{glm::vec2{-1, -1},
+                                             glm::vec2{2, 2}};
+
   resources::resource_manager mgr{"res/"};
   bool playing{true};
   bool init{false};
+
+  sound::sound_buffer snd_buffer{};
+  const glm::vec2 normal{0, 0.1f};
 };
 
 int main()
 {
   using namespace core;
-  engine::inicialize(1280, 720, "test", true);
+  engine::inicialize(640, 480, "test", true);
   // auto sound{mgr.load_wav("highlands", "sound/highlands.wav")};
 
   render::renderer::clear_color(0.f, 0.f, 0.f, 0.0f);
@@ -78,54 +170,3 @@ int main()
   engine::dispose();
   return 0;
 }
-
-// int gl_check();
-// int main()
-//{
-//  using namespace core;
-//  window_manager win_mgr{"test", 640, 480};
-
-//  resources::resource_manager mgr{"res/"};
-//  auto prg{mgr.load_shader_program("test_prg", "shaders/test_shader.vert",
-//                                   "shaders/test_shader.frag")};
-//  auto texture{mgr.load_texture2D("texture", "textures/blue_tex.jpg")};
-
-//  using namespace render;
-//  renderer::clear_color(0.33f, 0.66f, 0.99f, 0.0f);
-
-//  position positions[4]{{-1, -1}, {-1, 1}, {1, 1}, {1, -1}};
-//  vertex_buffer pos_vbo{sizeof(positions), positions};
-
-//  position tex_pos[4]{{0, 0}, {0, 1}, {1, 1}, {1, 0}};
-//  vertex_buffer tex_vbo{sizeof(tex_pos), tex_pos};
-
-//  unsigned int indices[6]{0, 1, 2, 3};
-
-//  index_buffer vebo{6, indices};
-
-//  vertex_array vao{};
-
-//  vao.enable_array(0);
-//  vao.enable_array(1);
-
-//  vao.bind_vertex_buffer(pos_vbo);
-//  vao.set_pointer(0, 2, false, sizeof(position), nullptr);
-
-//  vao.bind_vertex_buffer(tex_vbo);
-//  vao.set_pointer(1, 2, false, sizeof(position), nullptr);
-
-//  vao.bind_index_buffer(vebo);
-
-//  prg->use();
-//  texture->bind();
-//  prg->set_uniform("tex", 0);
-
-//  while (true)
-//    {
-//      renderer::draw(GL_TRIANGLE_FAN, 4, nullptr);
-
-//      win_mgr.swap_buffers();
-//      renderer::clear();
-//    }
-//  return 0;
-//}

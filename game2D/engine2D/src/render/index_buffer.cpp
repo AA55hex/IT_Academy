@@ -2,16 +2,15 @@
 
 namespace render
 {
-index_buffer::index_buffer() : count{0}
+index_buffer::index_buffer()
 {
   glGenBuffers(1, &id);
   restore(0, nullptr);
 }
 index_buffer::index_buffer(const unsigned int count_, const unsigned int* data)
-    : count{count_}
 {
   glGenBuffers(1, &id);
-  restore(count * element_size, data);
+  restore(count_, data);
 }
 
 void index_buffer::bind() const { glBindBuffer(buffer_type, id); }
@@ -19,9 +18,9 @@ void index_buffer::detach() const { glBindBuffer(buffer_type, 0); }
 
 void index_buffer::update(const unsigned int count_, const unsigned int* data)
 {
-  // count = count_;
   glBindBuffer(buffer_type, id);
   glBufferSubData(buffer_type, 0, count_ * element_size, data);
+  if (count_ < count) count = count_;
 }
 
 index_buffer::index_buffer(index_buffer&& buffer)
@@ -43,11 +42,11 @@ index_buffer& index_buffer::operator=(index_buffer&& buffer)
   return *this;
 }
 
-void index_buffer::restore(const unsigned int size, const unsigned int* data)
+void index_buffer::restore(const unsigned int count_, const unsigned int* data)
 {
-  count = size;
+  count = count_;
   glBindBuffer(buffer_type, id);
-  glBufferData(buffer_type, size, data, GL_STATIC_DRAW);
+  glBufferData(buffer_type, count * element_size, data, GL_STATIC_DRAW);
 }
 
 index_buffer::~index_buffer() { glDeleteBuffers(1, &id); }

@@ -16,10 +16,11 @@ vertex_buffer::vertex_buffer(const unsigned int size, const void* data)
 void vertex_buffer::bind() const { glBindBuffer(buffer_type, id); }
 void vertex_buffer::detach() const { glBindBuffer(buffer_type, 0); }
 
-void vertex_buffer::update(const unsigned int size, const void* data)
+void vertex_buffer::update(const unsigned int size_, const void* data)
 {
   glBindBuffer(buffer_type, id);
-  glBufferSubData(buffer_type, 0, size, data);
+  glBufferSubData(buffer_type, 0, size_, data);
+  if (size_ > size) size = size_;
 }
 
 vertex_buffer::vertex_buffer(vertex_buffer&& buffer)

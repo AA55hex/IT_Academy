@@ -67,6 +67,8 @@ bool engine::window_init(int width, int height, std::string title,
       std::cerr << "engine inicializer: Failed to load Glad";
       return false;
     }
+
+  glEnable(GL_DEPTH_TEST);
   return true;
 }
 bool engine::audio_init()
@@ -167,6 +169,14 @@ void audio_callback(void*, Uint8* stream, int len)
       return;
     }
   sound::sound_buffer& buffer{*sound::sound_buffer::current()};
+  for (size_t it{0}; it < buffer.playback_list.size(); it++)
+    {
+      if (buffer.playback_list[it]->state == playback_state::on_delete)
+        {
+          buffer.playback_list.erase(buffer.playback_list.begin() + it);
+          it--;
+        }
+    }
   std::remove_if(buffer.playback_list.begin(), buffer.playback_list.end(),
                  [](sound_buffer::playback_ptr& p) {
                    return p->state == playback_state::on_delete;

@@ -23,7 +23,7 @@ void renderer::clear_color(float r, float g, float b, float a)
 {
   glClearColor(r, g, b, a);
 }
-void renderer::clear() { glClear(GL_COLOR_BUFFER_BIT); }
+void renderer::clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }
 
 // void renderer::swap_buffers() { SDL_GL_SwapWindow(engine::window::window); }
 }  // namespace render

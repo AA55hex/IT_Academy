@@ -86,13 +86,14 @@ struct bind
   int sdl_key;
 };
 
-const std::array<bind, 6> keyboard_relation{
+const std::array<bind, 7> keyboard_relation{
     {{static_cast<int>(keyboard_key::q), SDL_SCANCODE_Q},
      {static_cast<int>(keyboard_key::w), SDL_SCANCODE_W},
      {static_cast<int>(keyboard_key::e), SDL_SCANCODE_E},
      {static_cast<int>(keyboard_key::a), SDL_SCANCODE_A},
      {static_cast<int>(keyboard_key::s), SDL_SCANCODE_S},
-     {static_cast<int>(keyboard_key::d), SDL_SCANCODE_D}}};
+     {static_cast<int>(keyboard_key::d), SDL_SCANCODE_D},
+     {static_cast<int>(keyboard_key::space), SDL_SCANCODE_SPACE}}};
 
 static bool translate_key(SDL_KeyboardEvent event, keyboard_key& result)
 {
@@ -104,7 +105,7 @@ static bool translate_key(SDL_KeyboardEvent event, keyboard_key& result)
       result = keyboard_key::none;
       return false;
     }
-  result = keyboard_key(it->sdl_key);
+  result = keyboard_key(it->engine_key);
   return true;
 }
 
@@ -125,7 +126,7 @@ static bool translate_key(SDL_MouseButtonEvent event, mouse_button& result)
       result = mouse_button::none;
       return false;
     }
-  result = mouse_button(it->sdl_key);
+  result = mouse_button(it->engine_key);
   return true;
 }
 
